@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { resolve } from 'path'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -9,39 +9,17 @@ export default defineConfig({
     port: 3000,
   },
   resolve: {
-    alias: [
-      {
-        find: "@",
-        replacement: resolve(__dirname, "./src"),
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+        '@/assets': path.resolve(__dirname, './src/assets'),
+        '@/components': path.resolve(__dirname, './src/components'),
+        '@/configurations': path.resolve(__dirname, './src/configurations'),
+        '@/constants': path.resolve(__dirname, './src/constants'),
+        '@/services': path.resolve(__dirname, './src/services'),
+        '@/modules': path.resolve(__dirname, './src/modules'),
+        '@/routers': path.resolve(__dirname, './src/routers'),
+        '@/lib': path.resolve(__dirname, './src/lib'),
+        '@/types': path.resolve(__dirname, './src/types'),
       },
-      {
-        find: "@/assets",
-        replacement: resolve(__dirname, "./src/assets"),
-      },
-      {
-        find: "@/components",
-        replacement: resolve(__dirname, "./src/components"),
-      },
-      {
-        find: "@/configurations",
-        replacement: resolve(__dirname, "./src/configurations"),
-      },
-      {
-        find: "@/constants",
-        replacement: resolve(__dirname, "./src/constants"),
-      },
-      {
-        find: "@/services",
-        replacement: resolve(__dirname, "./src/services"),
-      },
-      {
-        find: "@/modules",
-        replacement: resolve(__dirname, "./src/modules"),
-      },
-      {
-        find: "@/routers",
-        replacement: resolve(__dirname, "./src/routers"),
-      },
-    ],
   },
 })

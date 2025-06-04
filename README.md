@@ -4,23 +4,23 @@ A modern React application built with TypeScript, Vite, and a powerful set of to
 
 ## 🚀 Tech Stack
 
-- **Framework:** React 19 with TypeScript
-- **Build Tool:** Vite 6
-- **Styling:** TailwindCSS 4
-- **State Management & Data Fetching:** TanStack Query (React Query)
-- **Routing:** TanStack Router
-- **Table Management:** TanStack Table
-- **Internationalization:** i18next
-- **HTTP Client:** Axios
-- **Notifications:** React Hot Toast
-- **Development Tools:** ESLint, TypeScript
+- **Framework:** React 19.1.0 with TypeScript
+- **Build Tool:** Vite 6.3.5
+- **Styling:** TailwindCSS 4.1.8
+- **State Management & Data Fetching:** TanStack Query 5.80.2
+- **Routing:** TanStack Router 1.120.15
+- **Table Management:** TanStack Table 8.21.3
+- **Internationalization:** i18next 25.2.1
+- **HTTP Client:** Axios 1.9.0
+- **Notifications:** React Hot Toast 2.5.2
+- **Development Tools:** ESLint 9.25.0, TypeScript 5.8.3
 
 ## 📦 Installation
 
 ### Prerequisites
 
-- Node.js v22.14.0
-- npm v11.3.0
+- Node.js (Latest LTS version recommended)
+- npm (Latest version recommended)
 
 You can check your versions with:
 ```bash

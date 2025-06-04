@@ -32,6 +32,8 @@
         "@/service/*": ["./src/service/*"],
         "@/modules/*": ["./src/modules/*"],
         "@/routers/*": ["./src/routers/*"],
+        "@/lib/*": ["./src/lib/*"],
+        "@/types/*": ["./src/types/*"],
       }
   },
   "include": ["src"]
