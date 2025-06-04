@@ -5,7 +5,7 @@ interface StarProps {
   filled?: boolean;
 }
 
-export const Star: React.FC<StarProps> = ({ className = '', filled = true }) => {
+export const StarIcon: React.FC<StarProps> = ({ className = '', filled = true }) => {
   return (
     <svg
       className={className}

@@ -10,6 +10,8 @@ import {
 } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from '@/service/api';
+import { TablePagination } from './TablePagination';
+import { TableSkeleton } from './TableSkeleton';
 
 interface RowAction {
   label: string;
@@ -30,57 +32,24 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData>[];
   rowActions?: RowAction[];
   apiConfig?: ApiConfig;
-  enableRowSelection?: boolean;
-  onRowSelection?: (row: TData) => void;
-  enableMultiRowSelection?: boolean;
-  onRowSelectionChange?: (rows: TData[]) => void;
-  enableColumnResizing?: boolean;
-  enableColumnHiding?: boolean;
   enableGlobalFilter?: boolean;
   onGlobalFilterChange?: (value: string) => void;
   globalFilterPlaceholder?: string;
   enableSorting?: boolean;
   enablePagination?: boolean;
-  enableColumnFiltering?: boolean;
-  onColumnFilterChange?: (columnId: string, value: unknown) => void;
   data?: TData[];
   isLoading?: boolean;
 }
-
-const TableSkeleton = () => (
-  <tr className="animate-pulse">
-    <td className="px-6 py-4">
-      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-    </td>
-    <td className="px-6 py-4">
-      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-    </td>
-    <td className="px-6 py-4">
-      <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-    </td>
-    <td className="px-6 py-4">
-      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-    </td>
-  </tr>
-);
 
 export const DataTable = <TData extends object>({
   columns,
   rowActions,
   apiConfig,
-  enableRowSelection = false,
-  onRowSelection,
-  enableMultiRowSelection = false,
-  onRowSelectionChange,
-  enableColumnResizing = false,
-  enableColumnHiding = false,
   enableGlobalFilter = false,
   onGlobalFilterChange,
   globalFilterPlaceholder,
   enableSorting = false,
   enablePagination = true,
-  enableColumnFiltering = false,
-  onColumnFilterChange,
   data = [],
   isLoading = false,
 }: DataTableProps<TData>) => {
@@ -141,8 +110,6 @@ export const DataTable = <TData extends object>({
     manualPagination: true,
     pageCount: Math.ceil(totalItems / pagination.pageSize),
     enableSorting,
-    enableColumnResizing,
-    enableMultiRowSelection,
   });
 
   return (
@@ -152,14 +119,14 @@ export const DataTable = <TData extends object>({
           <input
             type="text"
             placeholder={globalFilterPlaceholder}
-            className="px-4 py-2 border rounded-md"
+            className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => onGlobalFilterChange?.(e.target.value)}
           />
         </div>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -174,7 +141,7 @@ export const DataTable = <TData extends object>({
                       {enableSorting && header.column.getCanSort() && (
                         <button
                           onClick={header.column.getToggleSortingHandler()}
-                          className="cursor-pointer"
+                          className="cursor-pointer hover:text-gray-700 transition-colors"
                         >
                           {{
                             asc: '↑',
@@ -189,16 +156,14 @@ export const DataTable = <TData extends object>({
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-gray-200">
             {(isLoading || isTableLoading) ? (
-              Array.from({ length: pagination.pageSize }).map((_, index) => (
-                <TableSkeleton key={index} />
-              ))
+              <TableSkeleton columns={columns.length + (rowActions ? 1 : 0)} rows={pagination.pageSize} />
             ) : (
               table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50">
+                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -209,7 +174,7 @@ export const DataTable = <TData extends object>({
                           <button
                             key={index}
                             onClick={() => action.onClick(row.original)}
-                            className="text-gray-600 hover:text-gray-900"
+                            className="text-gray-600 hover:text-gray-900 transition-colors"
                             title={action.label}
                           >
                             {action.icon}
@@ -226,45 +191,7 @@ export const DataTable = <TData extends object>({
       </div>
 
       {enablePagination && (
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-2">
-            <button
-              className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage() || isLoading || isTableLoading}
-            >
-              {'<<'}
-            </button>
-            <button
-              className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage() || isLoading || isTableLoading}
-            >
-              {'<'}
-            </button>
-            <button
-              className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage() || isLoading || isTableLoading}
-            >
-              {'>'}
-            </button>
-            <button
-              className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage() || isLoading || isTableLoading}
-            >
-              {'>>'}
-            </button>
-          </div>
-          <span className="flex items-center gap-1">
-            <div>صفحه</div>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} از{' '}
-              {table.getPageCount()}
-            </strong>
-          </span>
-        </div>
+        <TablePagination table={table} isLoading={isLoading || isTableLoading} />
       )}
     </div>
   );

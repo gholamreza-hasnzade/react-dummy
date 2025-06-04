@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star } from './star';
+import { StarIcon } from '@/constants/svgs/star';
 
 interface ProductRatingIconProps {
   rating: number;
@@ -16,7 +16,7 @@ export const ProductRatingIcon: React.FC<ProductRatingIconProps> = ({ rating, cl
   return (
     <div className={`flex items-center gap-0.5 ${className}`}>
       {[...Array(5)].map((_, index) => (
-        <Star
+        <StarIcon
           key={index}
           className={`w-4 h-4 ${index < getStars() ? 'text-yellow-500' : 'text-gray-300'}`}
           filled={true}

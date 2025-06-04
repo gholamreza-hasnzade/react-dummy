@@ -3,7 +3,7 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import type { Product } from '@/types/product';
 import { apiService } from '@/service/api';
-import { Star } from '@/components/atoms/star';
+import { StarIcon } from '@/constants/svgs/star';
 
 const ImageSkeleton = () => (
   <div className="animate-pulse">
@@ -139,7 +139,7 @@ export const ProductDetail = () => {
           {/* Product Details */}
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <Star className="text-yellow-500 w-8 h-8" />
+              <StarIcon className="text-yellow-500 w-8 h-8" />
               <span className="text-gray-700 text-xl">{product.rating.toFixed(1)}</span>
               <span className="text-sm text-gray-500">({product.reviews.length} reviews)</span>
             </div>
@@ -203,7 +203,7 @@ export const ProductDetail = () => {
                         <div className="font-medium">{review.reviewerName}</div>
                         <div className="flex gap-0.5">
                           {[...Array(5)].map((_, i) => (
-                            <Star
+                            <StarIcon
                               key={i}
                               className="text-yellow-500 w-4 h-4"
                               filled={i < review.rating}
