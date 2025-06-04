@@ -17,9 +17,20 @@ A modern React application built with TypeScript, Vite, and a powerful set of to
 
 ## 📦 Installation
 
+### Prerequisites
+
+- Node.js v22.14.0
+- npm v11.3.0
+
+You can check your versions with:
+```bash
+node --version
+npm --version
+```
+
 1. Clone the repository:
 ```bash
-git clone [your-repository-url]
+git clone https://github.com/gholamreza-hasnzade/react-dummy.git
 cd react-dummy
 ```
 
@@ -36,7 +47,7 @@ To start the development server:
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at `http://localhost:3000`
 
 ## 🏗️ Building for Production
 
