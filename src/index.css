@@ -16,8 +16,8 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;
 }
 @theme {
   --default-font-family: "YekanBakh";
@@ -94,9 +94,4 @@ body {
 
   --color-black: #000;
   --color-white: #fff;
-  /*
-  --text-tiny: 0.625rem;
-  --text-tiny--line-height: 1.5rem;
-  --text-tiny--letter-spacing: 0.125rem;
-  --text-tiny--font-weight: 500; */
 }
