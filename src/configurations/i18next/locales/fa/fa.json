@@ -12,7 +12,7 @@
         "inStock": "موجود",
         "outOfStock": "ناموجود",
         "detail": {
-            "backToProducts": "← بازگشت به محصولات",
+            "backToProducts": "بازگشت به محصولات",
             "reviews": "{{count}} نظر",
             "off": "{{percentage}}% تخفیف",
             "brand": "برند",

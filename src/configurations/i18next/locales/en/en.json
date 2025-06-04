@@ -12,7 +12,7 @@
         "inStock": "In Stock",
         "outOfStock": "Out of Stock",
         "detail": {
-            "backToProducts": "← Back to Products",
+            "backToProducts": "Back to Products",
             "reviews": "{{count}} reviews",
             "off": "{{percentage}}% off",
             "brand": "Brand",
