@@ -27,5 +27,13 @@
             "warranty": "گارانتی",
             "productNotFound": "محصول یافت نشد"
         }
+    },
+    "pagination": {
+        "firstPage": "صفحه اول",
+        "previousPage": "صفحه قبل",
+        "nextPage": "صفحه بعد",
+        "lastPage": "صفحه آخر",
+        "page": "صفحه",
+        "of": "از"
     }
 }

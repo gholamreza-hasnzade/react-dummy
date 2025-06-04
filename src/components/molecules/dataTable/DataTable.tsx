@@ -189,7 +189,7 @@ export const DataTable = <TData extends object>({
                     className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                     style={{ width: header.getSize() }}
                   >
-                    <div className="flex items-center justify-end space-x-1">
+                    <div className="flex items-center justify-start space-x-1">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {enableSorting && header.column.getCanSort() && (
                         <button
