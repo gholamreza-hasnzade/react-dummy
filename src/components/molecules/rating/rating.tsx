@@ -1,12 +1,12 @@
 import React from 'react';
 import { StarIcon } from '@/constants/svgs/star';
 
-interface ProductRatingIconProps {
+interface RatingProps {
   rating: number;
   className?: string;
 }
 
-export const ProductRatingIcon: React.FC<ProductRatingIconProps> = ({ rating, className = '' }) => {
+export const Rating: React.FC<RatingProps> = ({ rating, className = '' }) => {
   const getStars = () => {
     if (rating < 3) return 2;
     if (rating >= 3 && rating < 4) return 3;

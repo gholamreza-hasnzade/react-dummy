@@ -41,6 +41,38 @@ interface DataTableProps<TData> {
   isLoading?: boolean;
 }
 
+const CACHE_KEY = 'products_cache';
+const CACHE_TIMESTAMP_KEY = 'products_cache_timestamp';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; 
+
+const getCachedData = (): ApiResponse<unknown> | null => {
+  try {
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+    
+    if (!cachedData || !timestamp) return null;
+    
+    const now = new Date().getTime();
+    const cacheAge = now - parseInt(timestamp);
+    
+    if (cacheAge > CACHE_DURATION) return null;
+    
+    return JSON.parse(cachedData);
+  } catch (error) {
+    console.error('Error reading from cache:', error);
+    return null;
+  }
+};
+
+const setCachedData = (data: ApiResponse<unknown>) => {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    localStorage.setItem(CACHE_TIMESTAMP_KEY, new Date().getTime().toString());
+  } catch (error) {
+    console.error('Error writing to cache:', error);
+  }
+};
+
 export const DataTable = <TData extends object>({
   columns,
   rowActions,
@@ -64,6 +96,7 @@ export const DataTable = <TData extends object>({
       return { products: data, total: data.length };
     }
 
+    // Always fetch from API when pagination changes
     const queryParams = new URLSearchParams({
       limit: pagination.pageSize.toString(),
       skip: (pagination.pageIndex * pagination.pageSize).toString()
@@ -78,6 +111,24 @@ export const DataTable = <TData extends object>({
     const response = await apiService.get<ApiResponse<TData>>(
       `${apiConfig.endpoint}?${queryParams.toString()}`
     );
+
+    const existingCache = getCachedData();
+    
+    if (existingCache) {
+      const start = pagination.pageIndex * pagination.pageSize;
+      const updatedCache = {
+        ...existingCache,
+        products: [
+          ...existingCache.products.slice(0, start),
+          ...response.data.products,
+          ...existingCache.products.slice(start + response.data.products.length)
+        ]
+      };
+      setCachedData(updatedCache);
+    } else {
+      setCachedData(response.data);
+    }
+    
     return response.data;
   };
 
@@ -85,10 +136,12 @@ export const DataTable = <TData extends object>({
     queryKey: ['tableData', apiConfig?.endpoint, pagination, sorting],
     queryFn: fetchData,
     enabled: !!apiConfig?.endpoint,
+    staleTime: CACHE_DURATION,
+    gcTime: CACHE_DURATION,
   });
 
-  const tableData = queryData?.products || data;
-  const totalItems = queryData?.total || data.length;
+  const tableData = (queryData as ApiResponse<TData>)?.products || data;
+  const totalItems = (queryData as ApiResponse<TData>)?.total || data.length;
 
   const handlePaginationChange = useCallback((updater: typeof pagination | ((old: typeof pagination) => typeof pagination)) => {
     const newPagination = typeof updater === 'function' ? updater(pagination) : updater;

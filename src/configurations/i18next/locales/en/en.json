@@ -1,3 +1,31 @@
 {
-    "welcome": "Welcome to the system"
+    "welcome": "Welcome to the system",
+    "products": {
+        "title": "Products",
+        "image": "Image",
+        "productName": "Product Name",
+        "rating": "Rating",
+        "price": "Price",
+        "category": "Category",
+        "status": "Status",
+        "discount": "{{percentage}}% discount",
+        "inStock": "In Stock",
+        "outOfStock": "Out of Stock",
+        "detail": {
+            "backToProducts": "← Back to Products",
+            "reviews": "{{count}} reviews",
+            "off": "{{percentage}}% off",
+            "brand": "Brand",
+            "stock": "Stock",
+            "units": "units",
+            "sku": "SKU",
+            "weight": "Weight",
+            "dimensions": "Dimensions",
+            "minOrder": "Min Order",
+            "shippingAndReturns": "Shipping & Returns",
+            "customerReviews": "Customer Reviews",
+            "warranty": "Warranty",
+            "productNotFound": "Product not found"
+        }
+    }
 }

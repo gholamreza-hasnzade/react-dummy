@@ -1,14 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import type { Product } from "@/types/product";
-import { DataTable } from "../components/molecules/dataTable/DataTable";
-import { Badge } from "../components/atoms/Badge";
-import { ProductRatingIcon } from "../components/atoms/ProductRatingIcon";
+import { DataTable } from "@/components/molecules/dataTable/DataTable";
+import { Badge } from "@/components/atoms/Badge";
+import { Rating } from "@/components/molecules/rating/rating";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
 
 export const ProductList = () => {
+  const { t } = useTranslation();
+
   const columns: ColumnDef<Product>[] = [
     {
-      header: "تصویر",
+      header: t("products.image"),
       accessorKey: "thumbnail",
       size: 100,
       cell: ({ row }) => {
@@ -35,7 +38,7 @@ export const ProductList = () => {
       },
     },
     {
-      header: "نام محصول",
+      header: t("products.productName"),
       accessorKey: "title",
       size: 200,
       cell: ({ row }) => (
@@ -52,17 +55,17 @@ export const ProductList = () => {
       ),
     },
     {
-      header: "امتیاز",
+      header: t("products.rating"),
       accessorKey: "rating",
       size: 150,
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <ProductRatingIcon rating={row.original.rating} />
+          <Rating rating={row.original.rating} />
         </div>
       ),
     },
     {
-      header: "قیمت",
+      header: t("products.price"),
       accessorKey: "price",
       size: 150,
       cell: ({ row }) => (
@@ -72,14 +75,14 @@ export const ProductList = () => {
           </span>
           {row.original.discountPercentage > 0 && (
             <span className="text-green-600 text-xs">
-              {row.original.discountPercentage}% تخفیف
+              {t("products.discount", { percentage: row.original.discountPercentage })}
             </span>
           )}
         </div>
       ),
     },
     {
-      header: "دسته‌بندی",
+      header: t("products.category"),
       accessorKey: "category",
       size: 150,
       cell: ({ row }) => (
@@ -87,7 +90,7 @@ export const ProductList = () => {
       ),
     },
     {
-      header: "وضعیت",
+      header: t("products.status"),
       accessorKey: "availabilityStatus",
       size: 150,
       cell: ({ row }) => (
@@ -97,7 +100,9 @@ export const ProductList = () => {
             row.original.availabilityStatus === "In Stock" ? "success" : "error"
           }
         >
-          {row.original.availabilityStatus === "In Stock" ? "موجود" : "ناموجود"}
+          {row.original.availabilityStatus === "In Stock" 
+            ? t("products.inStock") 
+            : t("products.outOfStock")}
         </Badge>
       ),
     },
@@ -105,7 +110,7 @@ export const ProductList = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">محصولات</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{t("products.title")}</h1>
 
       <DataTable
         columns={columns}

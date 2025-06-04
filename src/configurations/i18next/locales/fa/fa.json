@@ -1,3 +1,31 @@
 {
-    "welcome": "به سامانه خوش آمدید"
+    "welcome": "به سامانه خوش آمدید",
+    "products": {
+        "title": "محصولات",
+        "image": "تصویر",
+        "productName": "نام محصول",
+        "rating": "امتیاز",
+        "price": "قیمت",
+        "category": "دسته‌بندی",
+        "status": "وضعیت",
+        "discount": "{{percentage}}% تخفیف",
+        "inStock": "موجود",
+        "outOfStock": "ناموجود",
+        "detail": {
+            "backToProducts": "← بازگشت به محصولات",
+            "reviews": "{{count}} نظر",
+            "off": "{{percentage}}% تخفیف",
+            "brand": "برند",
+            "stock": "موجودی",
+            "units": "عدد",
+            "sku": "کد محصول",
+            "weight": "وزن",
+            "dimensions": "ابعاد",
+            "minOrder": "حداقل سفارش",
+            "shippingAndReturns": "ارسال و بازگشت",
+            "customerReviews": "نظرات مشتریان",
+            "warranty": "گارانتی",
+            "productNotFound": "محصول یافت نشد"
+        }
+    }
 }
