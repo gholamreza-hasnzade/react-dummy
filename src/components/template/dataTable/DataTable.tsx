@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,6 +8,7 @@ import {
   type SortingState,
   type ColumnDef,
 } from '@tanstack/react-table';
+import { useQuery } from '@tanstack/react-query';
 import { apiService } from '@/service/api';
 
 interface RowAction {
@@ -88,53 +89,37 @@ export const DataTable = <TData extends object>({
     pageIndex: 0,
     pageSize: 10,
   });
-  const [tableData, setTableData] = useState<TData[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [isTableLoading, setIsTableLoading] = useState(false);
-  const [cachedData, setCachedData] = useState<Record<string, { data: TData[]; total: number }>>({});
 
-  const fetchData = useCallback(async (pageIndex: number, pageSize: number) => {
+  const fetchData = async () => {
     if (!apiConfig?.endpoint) {
-      setTableData(data);
-      return;
+      return { products: data, total: data.length };
     }
 
-    const cacheKey = `${pageIndex}-${pageSize}`;
-    if (cachedData[cacheKey]) {
-      setTableData(cachedData[cacheKey].data);
-      setTotalItems(cachedData[cacheKey].total);
-      return;
+    const queryParams = new URLSearchParams({
+      limit: pagination.pageSize.toString(),
+      skip: (pagination.pageIndex * pagination.pageSize).toString()
+    });
+
+    if (enableSorting && sorting.length > 0) {
+      const { id, desc } = sorting[0];
+      queryParams.append('sortBy', id);
+      queryParams.append('order', desc ? 'desc' : 'asc');
     }
 
-    //setIsTableLoading(true);
-    try {
-      const skip = pageIndex * pageSize;
-      const limit = pageSize;
-      const response = await apiService.get<ApiResponse<TData>>(
-        `${apiConfig.endpoint}?limit=${limit}&skip=${skip}`
-      );
-      
-      if (response.data.products) {
-        setTableData(response.data.products);
-        setTotalItems(response.data.total);
-        setCachedData(prev => ({
-          ...prev,
-          [cacheKey]: {
-            data: response.data.products,
-            total: response.data.total
-          }
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setIsTableLoading(false);
-    }
-  }, [apiConfig?.endpoint, data, cachedData]);
+    const response = await apiService.get<ApiResponse<TData>>(
+      `${apiConfig.endpoint}?${queryParams.toString()}`
+    );
+    return response.data;
+  };
 
-  useEffect(() => {
-    fetchData(pagination.pageIndex, pagination.pageSize);
-  }, [pagination.pageIndex, pagination.pageSize, fetchData]);
+  const { data: queryData, isLoading: isTableLoading } = useQuery({
+    queryKey: ['tableData', apiConfig?.endpoint, pagination, sorting],
+    queryFn: fetchData,
+    enabled: !!apiConfig?.endpoint,
+  });
+
+  const tableData = queryData?.products || data;
+  const totalItems = queryData?.total || data.length;
 
   const handlePaginationChange = useCallback((updater: typeof pagination | ((old: typeof pagination) => typeof pagination)) => {
     const newPagination = typeof updater === 'function' ? updater(pagination) : updater;
@@ -192,9 +177,9 @@ export const DataTable = <TData extends object>({
                           className="cursor-pointer"
                         >
                           {{
-                            asc: ' 🔼',
-                            desc: ' 🔽',
-                          }[header.column.getIsSorted() as string] ?? null}
+                            asc: '↑',
+                            desc: '↓',
+                          }[header.column.getIsSorted() as string] ?? '↕'}
                         </button>
                       )}
                     </div>

@@ -1,13 +1,26 @@
-import { useState, useCallback } from 'react';
 import { Link } from '@tanstack/react-router';
 import type { Product } from '@/types/product';
-import { DataTable } from './DataTable';
-import { Badge } from './Badge';
+import { DataTable } from '../components/template/dataTable/DataTable';
+import { Badge } from '../components/atoms/Badge';
+import { ProductRatingIcon } from '../components/atoms/ProductRatingIcon';
 import type { ColumnDef } from '@tanstack/react-table';
 
 export const ProductList = () => {
-
   const columns: ColumnDef<Product>[] = [
+    {
+      header: 'تصویر',
+      accessorKey: 'thumbnail',
+      size: 100,
+      cell: ({ row }) => (
+        <div className="w-16 h-16 rounded-lg overflow-hidden">
+          <img
+            src={row.original.thumbnail}
+            alt={row.original.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ),
+    },
     {
       header: 'نام محصول',
       accessorKey: 'title',
@@ -30,10 +43,8 @@ export const ProductList = () => {
       accessorKey: 'rating',
       size: 150,
       cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className="text-yellow-500 mr-1">★</span>
-          <span className="text-xs">{row.original.rating.toFixed(1)}</span>
-          <span className="text-gray-500 ml-1 text-xs">({row.original.reviews.length})</span>
+        <div className="flex items-center gap-2">
+          <ProductRatingIcon rating={row.original.rating} />
         </div>
       ),
     },
@@ -75,16 +86,13 @@ export const ProductList = () => {
     },
   ];
 
- 
-
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">محصولات</h1>
 
       <DataTable
         columns={columns}
-       /*  isLoading={isLoading} */
-        enableSorting={false}
+        enableSorting={true}
         enableColumnResizing={false}
         enableColumnHiding={false}
         enableGlobalFilter={false}
