@@ -1,54 +1,116 @@
-# React + TypeScript + Vite
+# React Dummy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React application built with TypeScript, Vite, and a powerful set of tools for optimal development experience.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework:** React 19 with TypeScript
+- **Build Tool:** Vite 6
+- **Styling:** TailwindCSS 4
+- **State Management & Data Fetching:** TanStack Query (React Query)
+- **Routing:** TanStack Router
+- **Table Management:** TanStack Table
+- **Internationalization:** i18next
+- **HTTP Client:** Axios
+- **Notifications:** React Hot Toast
+- **Development Tools:** ESLint, TypeScript
 
-## Expanding the ESLint configuration
+## 📦 Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+1. Clone the repository:
+```bash
+git clone [your-repository-url]
+cd react-dummy
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+2. Install dependencies:
+```bash
+npm install
 ```
+
+## 🛠️ Development
+
+To start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`
+
+## 🏗️ Building for Production
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+To preview the production build:
+
+```bash
+npm run preview
+```
+
+## 📝 Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
+
+## 🧰 Project Structure
+
+```
+react-dummy/
+├── src/               # Source files
+├── public/           # Static assets
+├── index.html        # Entry HTML file
+├── package.json      # Project dependencies and scripts
+├── tsconfig.json     # TypeScript configuration
+├── vite.config.ts    # Vite configuration
+└── tailwind.config.js # TailwindCSS configuration
+```
+
+## 🔧 Configuration
+
+### TypeScript
+The project uses TypeScript for type safety and better development experience. Configuration can be found in `tsconfig.json`.
+
+### ESLint
+ESLint is configured for code quality and consistency. The configuration can be extended in the ESLint config file.
+
+### TailwindCSS
+TailwindCSS is set up for utility-first styling. Configuration can be found in `tailwind.config.js`.
+
+## 📚 Dependencies
+
+### Core Dependencies
+- React 19
+- TypeScript
+- Vite
+- TailwindCSS
+- TanStack Query
+- TanStack Router
+- TanStack Table
+- i18next
+- Axios
+- React Hot Toast
+
+### Development Dependencies
+- ESLint
+- TypeScript ESLint
+- Vite React Plugin
+- Various type definitions
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
