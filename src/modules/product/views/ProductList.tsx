@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { Product } from "@/types/product";
 import { DataTable } from "@/components/molecules/dataTable/DataTable";
-import { Badge } from "@/components/atoms/Badge";
+import { Badge } from "@/components/atoms/badge/Badge";
 import { Rating } from "@/components/molecules/rating/rating";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
