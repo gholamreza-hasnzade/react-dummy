@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import clsx from 'clsx';
 
 interface BadgeProps {
   children: ReactNode;
@@ -32,9 +33,10 @@ const colorClasses = {
 export const Badge = ({ children, variant = 'text', color = 'default' }: BadgeProps) => {
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+      className={clsx(
+        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
         colorClasses[color][variant]
-      }`}
+      )}
     >
       {children}
     </span>
