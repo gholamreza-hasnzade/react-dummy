@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { Product } from "@/types/product";
-import { DataTable } from "../components/template/dataTable/DataTable";
+import { DataTable } from "../components/molecules/dataTable/DataTable";
 import { Badge } from "../components/atoms/Badge";
 import { ProductRatingIcon } from "../components/atoms/ProductRatingIcon";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -110,11 +110,8 @@ export const ProductList = () => {
       <DataTable
         columns={columns}
         enableSorting={true}
-        enableColumnResizing={false}
-        enableColumnHiding={false}
         enableGlobalFilter={false}
         enablePagination={true}
-        enableColumnFiltering={false}
         apiConfig={{
           endpoint: "/products",
         }}
