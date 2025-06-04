@@ -2,16 +2,17 @@
 
 @font-face {
   font-family: "YekanBakh";
-  src: url("./assets/fonts/woff2/YekanBakhFaNum_Black.ttf");
-  font-variation-settings: "wght" 400, "DOTS" 1;
+  src: url("./assets/fonts/woff2/YekanBakhFaNum-Regular.ttf") format("truetype");
+  font-weight: normal;
   font-style: normal;
-  font-family: "YekanBakh";
 }
 
 body {
   direction: rtl;
   text-align: right;
   height: 100vh;
+  font-family: "YekanBakh", sans-serif;
+  font-feature-settings: "ss01";
 }
 
 ::-webkit-scrollbar {
