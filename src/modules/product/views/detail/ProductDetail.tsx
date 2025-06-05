@@ -5,6 +5,8 @@ import { apiService } from '@/service/api';
 import { StarIcon } from '@/constants/svgs/star';
 import { useTranslation } from 'react-i18next';
 import { ImageGallery, ImageSkeleton } from '@/components/molecules';
+import { Button } from '@/components/atoms/button/button';
+import { Card } from '@/components/atoms/card/card';
 
 
 export const ProductDetail = () => {
@@ -64,26 +66,27 @@ export const ProductDetail = () => {
     return (
       <div className="text-center py-8">
         <p className="text-red-500">{error instanceof Error ? error.message : t("products.detail.productNotFound")}</p>
-        <button
+        <Button
+          variant="outline"
+          color="primary"
           onClick={() => navigate({ to: '/' })}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           {t("products.detail.backToProducts")}
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <button
+      <Button
         onClick={() => navigate({ to: '/' })}
-        className="mb-6 px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-      >
+        variant="outline"
+        color="primary"      >
         {t("products.detail.backToProducts")}
-      </button>
+      </Button>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <Card className="mt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ImageGallery images={product.images} title={product.title} />
 
@@ -174,7 +177,7 @@ export const ProductDetail = () => {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }; 

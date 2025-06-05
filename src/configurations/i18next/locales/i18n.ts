@@ -1,7 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-// Import translation files
 import enTranslation from "@/configurations/i18next/locales/en/en.json";
 import faTranslation from "@/configurations/i18next/locales/fa/fa.json";
 
