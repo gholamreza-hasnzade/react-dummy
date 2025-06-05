@@ -114,30 +114,44 @@ export const ProductDetail = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-semibold">{t("products.detail.brand")}:</span> {product.brand}
-                </div>
-                <div>
-                  <span className="font-semibold">{t("products.category")}:</span> {product.category}
-                </div>
-                <div>
-                  <span className="font-semibold">{t("products.detail.stock")}:</span> {product.stock} {t("products.detail.units")}
-                </div>
-                <div>
-                  <span className="font-semibold">{t("products.detail.sku")}:</span> {product.sku}
-                </div>
-                <div>
-                  <span className="font-semibold">{t("products.detail.weight")}:</span> {product.weight}kg
-                </div>
-                <div>
-                  <span className="font-semibold">{t("products.status")}:</span> {product.availabilityStatus}
-                </div>
-                <div>
-                  <span className="font-semibold">{t("products.detail.dimensions")}:</span> {product.dimensions.width} x {product.dimensions.height} x {product.dimensions.depth} cm
-                </div>
-                <div>
-                  <span className="font-semibold">{t("products.detail.minOrder")}:</span> {product.minimumOrderQuantity} {t("products.detail.units")}
-                </div>
+                {[
+                  {
+                    label: "products.detail.brand",
+                    value: product.brand
+                  },
+                  {
+                    label: "products.category",
+                    value: product.category
+                  },
+                  {
+                    label: "products.detail.stock",
+                    value: `${product.stock} ${t("products.detail.units")}`
+                  },
+                  {
+                    label: "products.detail.sku",
+                    value: product.sku
+                  },
+                  {
+                    label: "products.detail.weight",
+                    value: `${product.weight}kg`
+                  },
+                  {
+                    label: "products.status",
+                    value: product.availabilityStatus
+                  },
+                  {
+                    label: "products.detail.dimensions",
+                    value: `${product.dimensions.width} x ${product.dimensions.height} x ${product.dimensions.depth} cm`
+                  },
+                  {
+                    label: "products.detail.minOrder",
+                    value: `${product.minimumOrderQuantity} ${t("products.detail.units")}`
+                  }
+                ].map((detail, index) => (
+                  <div key={index}>
+                    <span className="font-semibold">{t(detail.label)}:</span> {detail.value}
+                  </div>
+                ))}
               </div>
 
               <div className="border-t pt-4 mt-4">
@@ -153,7 +167,7 @@ export const ProductDetail = () => {
                 <h3 className="font-semibold mb-2">{t("products.detail.customerReviews")}</h3>
                 <div className="space-y-4">
                   {product.reviews.map((review, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded">
+                    <Card key={index} className="bg-gray-50 p-4 rounded">
                       <div className="flex items-center justify-between mb-2">
                         <div className="font-medium">{review.reviewerName}</div>
                         <div className="flex gap-0.5">
@@ -170,7 +184,7 @@ export const ProductDetail = () => {
                       <p className="text-gray-400 text-xs mt-2">
                         {new Date(review.date).toLocaleDateString()}
                       </p>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               </div>
