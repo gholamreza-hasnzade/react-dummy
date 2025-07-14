@@ -1,14 +1,23 @@
-import { RouterProvider, createRouter } from '@tanstack/react-router';
-import { routeTree } from './routers/routes';
-
-const router = createRouter({ routeTree });
-
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router;
-  }
-}
+import { Button } from "./components/atoms/button/button";
+import { Input } from "./components/atoms/input/input";
 
 export const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <div className="flex items-center gap-5 w-full ">
+      <Input
+        id="wer"
+        value=""
+        label="Input"
+        onChange={() => {}}
+        required
+        placeholder="placeholder"
+        size="lg"
+        fullWidth
+        
+      />
+      <Button variant="contained" color="error" startIcon={"1"} endIcon="2" >
+        rtwet
+      </Button>
+    </div>
+  );
 };
