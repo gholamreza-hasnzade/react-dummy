@@ -36,11 +36,11 @@ export const App = () => {
         multiple={true}
         onChange={(values) => console.log('Selected values:', values)}
         label="Choose Category"
-        defaultValue={["2"]} // Pre-selected values
+       /*  defaultValue={["2"]} // Pre-selected values */
         /*  error="This field is required"
         required */
         id="test-select"
-        editMode={true}
+        editMode={false}
         
       />
     </div>

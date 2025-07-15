@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 type ColorKey =
   | "primary"
@@ -162,52 +161,66 @@ export const Select: React.FC<SelectProps> = ({
     };
   }, [isOpen]);
 
-  // Build API URL with search param and additional params
-  const buildApiUrl = (searchTerm: string) => {
-    if (!apiUrl) return "";
-    
+  // Infinite scroll state
+  const [optionsData, setOptionsData] = useState<Option[]>([]);
+  const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const limit = 10;
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch function for infinite scroll
+  const fetchOptions = useCallback(async (reset = false) => {
+    if (!apiUrl) return;
+    setLoadingMore(true);
     const url = new URL(apiUrl);
-    
-    // Add search parameter if provided
-    if (searchTerm) {
-      url.searchParams.set(searchParamKey, searchTerm);
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("skip", String(reset ? 0 : skip));
+    // Add search and other params as needed
+    if (debouncedSearch) {
+      url.searchParams.set(searchParamKey, debouncedSearch);
     }
-    
-    // Add additional URL parameters
     Object.entries(urlParams).forEach(([key, value]) => {
       url.searchParams.set(key, String(value));
     });
-    
-    return url.toString();
+    const response = await fetch(url.toString());
+    const result = await response.json();
+    const newOptions = result.products || result;
+    setOptionsData(prev =>
+      reset ? newOptions : [...prev, ...newOptions]
+    );
+    setHasMore(newOptions.length === limit);
+    setLoadingMore(false);
+    if (reset) setSkip(limit);
+    else setSkip(prev => prev + limit);
+  }, [apiUrl, skip, limit, debouncedSearch, searchParamKey, urlParams]);
+
+  // Initial and search fetch
+  useEffect(() => {
+    if (isOpen && apiUrl && !options) {
+      fetchOptions(true);
+    }
+    // eslint-disable-next-line
+  }, [isOpen, debouncedSearch, apiUrl]);
+
+  // Reset optionsData if options prop is used
+  useEffect(() => {
+    if (options) {
+      setOptionsData(options);
+    }
+  }, [options]);
+
+  // Scroll handler
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (scrollHeight - scrollTop <= clientHeight + 50 && hasMore && !loadingMore) {
+      fetchOptions();
+    }
   };
 
-  const searchUrl = buildApiUrl(debouncedSearch);
-
-  // Use static options or fetch from API
-  const shouldUseApi = !options && !!apiUrl;
-  
-  const { data: apiData, isLoading, error: queryError } = useQuery({
-    queryKey: [searchUrl],
-    queryFn: async () => {
-      const response = await fetch(searchUrl);
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
-      }
-      const result = await response.json();
-      if (result.products && Array.isArray(result.products)) {
-        return result.products as Option[];
-      }
-      if (Array.isArray(result)) {
-        return result as Option[];
-      }
-      return [] as Option[];
-    },
-    enabled: shouldUseApi, // Only run query if using API
-  });
-
   // Use static options or API data
-  const data: Option[] = options || apiData || [];
-  const isDisabled = disabled || loading || (shouldUseApi && isLoading);
+  const data: Option[] = options ? options : optionsData;
+  const isDisabled = disabled || loading || loadingMore;
 
   const getErrorColorClasses = () => {
     if (error) {
@@ -310,18 +323,6 @@ export const Select: React.FC<SelectProps> = ({
     };
   };
 
-  // Filter options based on search if using static options
-  const filteredData = options 
-    ? data.filter((item: Option) => {
-        const itemTitle = String(item[titleKey]).toLowerCase();
-        return itemTitle.includes(debouncedSearch.toLowerCase());
-      })
-    : data;
-
-  if (queryError instanceof Error) {
-    return <div className="text-red-500">{queryError.message}</div>;
-  }
-
   return (
     <div className={`${fullWidth ? 'w-full' : ''}`} style={getInlineWidthStyle()}>
       {/* Label */}
@@ -420,7 +421,11 @@ export const Select: React.FC<SelectProps> = ({
         </button>
 
         {isOpen && (
-          <div className={`absolute z-10 ${fullWidth ? 'w-full' : 'w-full'} mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto`}>
+          <div
+            ref={dropdownRef}
+            onScroll={handleScroll}
+            className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+          >
             {/* Search bar */}
             <div className="p-2 border-b border-gray-200 bg-gray-50">
               <input
@@ -434,39 +439,38 @@ export const Select: React.FC<SelectProps> = ({
               />
             </div>
             {/* Loading indicator for list only */}
-            {(isLoading || loading) ? (
-              <div className="px-3 py-2 text-gray-500">Loading...</div>
-            ) : filteredData?.length === 0 ? (
+            {loading && <div className="px-3 py-2 text-gray-500">Loading...</div>}
+            {data?.length === 0 && !loading && (
               <div className="px-3 py-2 text-gray-400">No options</div>
-            ) : (
-              filteredData?.map((item: Option) => {
-                const itemValue = String(item[valueKey]);
-                const itemTitle = String(item[titleKey]);
-                const isSelected = selectedValues.includes(itemValue);
-                
-                return (
-                  <div
-                    key={String(itemValue)}
-                    className={`px-3 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between ${
-                      isSelected ? 'bg-blue-50 text-blue-600' : ''
-                    }`}
-                    onClick={() => handleSelect(itemValue)}
-                  >
-                    <span
-                      className="truncate max-w-[400px] block"
-                      title={itemTitle}
-                    >
-                      {itemTitle.length > 100 ? itemTitle.slice(0, 100) + '...' : itemTitle}
-                    </span>
-                    {isSelected && (
-                      <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                  </div>
-                );
-              })
             )}
+            {data?.map((item: Option) => {
+              const itemValue = String(item[valueKey]);
+              const itemTitle = String(item[titleKey]);
+              const isSelected = selectedValues.includes(itemValue);
+              return (
+                <div
+                  key={String(itemValue)}
+                  className={`px-3 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between ${
+                    isSelected ? 'bg-blue-50 text-blue-600' : ''
+                  }`}
+                  onClick={() => handleSelect(itemValue)}
+                >
+                  <span
+                    className="truncate max-w-[400px] block"
+                    title={itemTitle}
+                  >
+                    {itemTitle.length > 100 ? itemTitle.slice(0, 100) + '...' : itemTitle}
+                  </span>
+                  {isSelected && (
+                    <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
+              );
+            })}
+            {loadingMore && <div className="px-3 py-2 text-gray-500">Loading more...</div>}
+            {!hasMore && data.length > 0 && <div className="px-3 py-2 text-gray-400">No more options</div>}
           </div>
         )}
       </div>
