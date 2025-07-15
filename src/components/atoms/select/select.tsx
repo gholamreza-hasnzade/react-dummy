@@ -390,8 +390,20 @@ export const Select: React.FC<SelectProps> = ({
                           </span>
                         ))}
                         {count > 0 && (
-                          <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                          <span className="relative group bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full cursor-pointer">
                             ... +{count}
+                            <div className="absolute left-1/2 top-full z-20 mt-1 w-max min-w-[120px] max-w-xs -translate-x-1/2 bg-gray-900 text-white text-xs rounded px-3 py-2 shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                              {(() => {
+                                const hidden = getSelectedTitles().slice(2);
+                                return hidden.length > 0 ? (
+                                  hidden.map((title, idx) => (
+                                    <div key={idx} className="whitespace-normal break-words py-0.5">{title}</div>
+                                  ))
+                                ) : (
+                                  <div className="whitespace-normal break-words py-0.5">No hidden items</div>
+                                );
+                              })()}
+                            </div>
                           </span>
                         )}
                       </>
