@@ -11,8 +11,8 @@ import { ActionsDropdown } from './ActionsDropdown';
 
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { DataTableHeader } from './DataTableHeader';
 import { DataTablePagination } from './DataTablePagination';
+import { DataTableHeader } from './DataTableHeader';
 
 interface Action<T> {
   label: string;
@@ -45,6 +45,7 @@ export function DataTable<T extends object>({
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
+  const [columnSizing, setColumnSizing] = useState({});
 
   // For client-side data
   const isClientData = Array.isArray(dataSource);
@@ -127,6 +128,7 @@ export function DataTable<T extends object>({
     pageCount: Math.ceil(total / pageSize),
     state: {
       pagination: { pageIndex, pageSize },
+      columnSizing,
     },
     manualPagination: true,
     onPaginationChange: updater => {
@@ -141,6 +143,9 @@ export function DataTable<T extends object>({
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    enableColumnResizing: true,
+    columnResizeMode: 'onChange',
+    onColumnSizingChange: setColumnSizing,
   });
 
   const computedPageCount = table.getPageCount();
@@ -195,16 +200,23 @@ export function DataTable<T extends object>({
                           </>
                         ) : (
                           row.getVisibleCells().map(cell => (
-                            <td
+                            <td 
                               key={cell.id}
                               className={
                                 cell.column.id === 'actions'
-                                  ? 'px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium sticky right-0 z-10'
-                                  : 'px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium'
+                                  ? 'px-6 py-6 text-sm text-gray-900 border-b border-gray-100 text-right font-medium'
+                                  : 'px-6 py-6 text-sm text-gray-900 border-b border-gray-100 text-right font-medium truncate max-w-full overflow-hidden whitespace-nowrap'
                               }
-                              style={cell.column.id === 'actions' ? { width: 150, minWidth: 150, maxWidth: 150 } : {}}
+                              style={{
+                                width: cell.column.getSize ? cell.column.getSize() : cell.column.columnDef.size,
+                                minWidth: cell.column.getSize ? cell.column.getSize() : cell.column.columnDef.size,
+                                maxWidth: cell.column.getSize ? cell.column.getSize() : cell.column.columnDef.size,
+                                ...(cell.column.id === 'actions' ? { width: 50, minWidth: 50, maxWidth: 50 } : {})
+                              }}
                             >
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              <span title={String(cell.getValue?.() ?? '')}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </span>
                             </td>
                           ))
                         )}
