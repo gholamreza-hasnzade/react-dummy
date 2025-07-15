@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, type LinkProps } from "react-router-dom";
+import { NavLink, type NavLinkProps } from "react-router-dom";
 
 type ColorKey =
   | "primary"
@@ -21,7 +21,7 @@ type ButtonProps = {
   fullWidth?: boolean;
   iconOnly?: boolean;
   tooltip?: string;
-  to?: LinkProps["to"];
+  to?: NavLinkProps["to"];
   children?: React.ReactNode;
   type?: "button" | "submit" | "reset";
   size?: Size;
@@ -30,45 +30,45 @@ type ButtonProps = {
 const colorMap = {
   primary: {
     contained:
-      "bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 disabled:bg-blue-400",
+      "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-2 focus:ring-blue-300 disabled:bg-blue-400",
     outlined:
-      "border border-blue-600 text-blue-600 hover:bg-blue-100 hover:border-blue-700 focus:ring-2 focus:ring-blue-300 disabled:text-blue-400 disabled:border-blue-400",
-    text: "text-blue-600 hover:text-blue-900 focus:ring-2 focus:ring-blue-300 disabled:text-blue-400",
+      "border border-blue-600 text-blue-600 hover:bg-blue-100 hover:border-blue-700 active:bg-blue-200 active:border-blue-800 focus:ring-2 focus:ring-blue-300 disabled:text-blue-400 disabled:border-blue-400",
+    text: "text-blue-600 hover:text-blue-900 active:text-blue-950 focus:outline-none disabled:text-blue-400",
   },
   secondary: {
     contained:
-      "bg-gray-600 text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-300 disabled:bg-gray-400",
+      "bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-800 focus:ring-2 focus:ring-gray-300 disabled:bg-gray-400",
     outlined:
-      "border border-gray-600 text-gray-600 hover:bg-gray-100 hover:border-gray-700 focus:ring-2 focus:ring-gray-300 disabled:text-gray-400 disabled:border-gray-400",
-    text: "text-gray-600 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 disabled:text-gray-400",
+      "border border-gray-600 text-gray-600 hover:bg-gray-100 hover:border-gray-700 active:bg-gray-200 active:border-gray-800 focus:ring-2 focus:ring-gray-300 disabled:text-gray-400 disabled:border-gray-400",
+    text: "text-gray-600 hover:text-gray-900 active:text-gray-950 focus:outline-none disabled:text-gray-400",
   },
   success: {
     contained:
-      "bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-300 disabled:bg-green-400",
+      "bg-green-600 text-white hover:bg-green-700 active:bg-green-800 focus:ring-2 focus:ring-green-300 disabled:bg-green-400",
     outlined:
-      "border border-green-600 text-green-600 hover:bg-green-100 hover:border-green-700 focus:ring-2 focus:ring-green-300 disabled:text-green-400 disabled:border-green-400",
-    text: "text-green-600 hover:text-green-900 focus:ring-2 focus:ring-green-300 disabled:text-green-400",
+      "border border-green-600 text-green-600 hover:bg-green-100 hover:border-green-700 active:bg-green-200 active:border-green-800 focus:ring-2 focus:ring-green-300 disabled:text-green-400 disabled:border-green-400",
+    text: "text-green-600 hover:text-green-900 active:text-green-950 focus:outline-none disabled:text-green-400",
   },
   error: {
     contained:
-      "bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-300 disabled:bg-red-400",
+      "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-2 focus:ring-red-300 disabled:bg-red-400",
     outlined:
-      "border border-red-600 text-red-600 hover:bg-red-100 hover:border-red-700 focus:ring-2 focus:ring-red-300 disabled:text-red-400 disabled:border-red-400",
-    text: "text-red-600 hover:text-red-700 focus:ring-2 focus:ring-red-300 disabled:text-red-400",
+      "border border-red-600 text-red-600 hover:bg-red-100 hover:border-red-700 active:bg-red-200 active:border-red-800 focus:ring-2 focus:ring-red-300 disabled:text-red-400 disabled:border-red-400",
+    text: "text-red-600 hover:text-red-700 active:text-red-950 focus:outline-none disabled:text-red-400",
   },
   warning: {
     contained:
-      "bg-yellow-500 text-black hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-300 disabled:bg-yellow-300",
+      "bg-yellow-500 text-black hover:bg-yellow-600 active:bg-yellow-700 focus:ring-2 focus:ring-yellow-300 disabled:bg-yellow-300",
     outlined:
-      "border border-yellow-500 text-yellow-600 hover:bg-yellow-100 hover:border-yellow-700 focus:ring-2 focus:ring-yellow-300 disabled:text-yellow-400 disabled:border-yellow-400",
-    text: "text-yellow-600 hover:text-yellow-900 focus:ring-2 focus:ring-yellow-300 disabled:text-yellow-400",
+      "border border-yellow-500 text-yellow-600 hover:bg-yellow-100 hover:border-yellow-700 active:bg-yellow-200 active:border-yellow-800 focus:ring-2 focus:ring-yellow-300 disabled:text-yellow-400 disabled:border-yellow-400",
+    text: "text-yellow-600 hover:text-yellow-900 active:text-yellow-950 focus:outline-none disabled:text-yellow-400",
   },
   info: {
     contained:
-      "bg-sky-500 text-white hover:bg-sky-600 focus:ring-2 focus:ring-sky-300 disabled:bg-sky-300",
+      "bg-sky-500 text-white hover:bg-sky-600 active:bg-sky-700 focus:ring-2 focus:ring-sky-300 disabled:bg-sky-300",
     outlined:
-      "border border-sky-500 text-sky-500 hover:bg-sky-100 hover:border-sky-700 focus:ring-2 focus:ring-sky-300 disabled:text-sky-400 disabled:border-sky-400",
-    text: "text-sky-500 hover:text-sky-900 focus:ring-2 focus:ring-sky-300 disabled:text-sky-400",
+      "border border-sky-500 text-sky-500 hover:bg-sky-100 hover:border-sky-700 active:bg-sky-200 active:border-sky-800 focus:ring-2 focus:ring-sky-300 disabled:text-sky-400 disabled:border-sky-400",
+    text: "text-sky-500 hover:text-sky-900 active:text-sky-950 focus:outline-none disabled:text-sky-400",
   },
 };
 
@@ -116,11 +116,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "px-5 py-3 text-lg",
     };
     const commonClassNames = [
-      "p-1 min-w-[80px] cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none disabled:opacity-50 disabled:pointer-events-none",
+      `p-1 min-w-[80px] ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'} inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none disabled:opacity-50 disabled:pointer-events-none`,
       fullWidth && "w-full",
       colorClasses,
       sizeClasses[size],
-      isDisabled && "cursor-not-allowed",
     ]
       .filter(Boolean)
       .join(" ");
@@ -134,9 +133,17 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (to) {
       return (
-        <Link to={to} {...sharedProps}>
+        <NavLink 
+          to={isDisabled ? "#" : to} 
+          className={({ isActive }) => 
+            `${commonClassNames} ${isActive && !isDisabled ? 'ring-2 ring-blue-500' : ''}`
+          }
+          title={tooltip}
+          aria-disabled={isDisabled}
+          onClick={isDisabled ? (e: React.MouseEvent) => e.preventDefault() : undefined}
+        >
           {content}
-        </Link>
+        </NavLink>
       );
     }
 
