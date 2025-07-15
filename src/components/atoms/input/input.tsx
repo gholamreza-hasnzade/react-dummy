@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import type { InputHTMLAttributes } from "react";
+
+type Size = "sm" | "md" | "lg";
 
 type InputProps = {
   id: string;
@@ -18,9 +21,17 @@ type InputProps = {
   readOnly?: boolean;
   size?: Size;
   fullWidth?: boolean;
-};
-
-type Size = "sm" | "md" | "lg";
+} & Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  | "value"
+  | "onChange"
+  | "id"
+  | "type"
+  | "required"
+  | "readOnly"
+  | "placeholder"
+  | "className"
+>;
 
 export const Input = ({
   id,
@@ -39,6 +50,8 @@ export const Input = ({
   readOnly = false,
   size = "md",
   fullWidth = false,
+  className,
+  ...rest
 }: InputProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -97,7 +110,10 @@ export const Input = ({
           placeholder={placeholder}
           required={required}
           readOnly={readOnly}
-          className={`mt-1 block w-full ${inputPaddingClasses} border rounded-md  focus:outline-none ${focusClasses} ${errorClasses} placeholder:text-gray-400 ${readOnlyClasses}`}
+          className={`mt-1 block w-full ${inputPaddingClasses} border rounded-md  focus:outline-none ${focusClasses} ${errorClasses} placeholder:text-gray-400 ${readOnlyClasses} ${
+            className || ""
+          }`}
+          {...rest}
         />
 
         {iconRight && (

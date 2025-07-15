@@ -16,7 +16,7 @@ type Option = {
 
 type SelectProps = {
   apiUrl?: string; 
-  titleKey: string;
+  titleKey: string | string[]; // changed here
   valueKey: string;
   variant?: "contained" | "outlined" | "text";
   color?: ColorKey;
@@ -303,10 +303,17 @@ export const Select: React.FC<SelectProps> = ({
     onChange?.(selectedObjects);
   };
 
+  const getTitleFromItem = (item: Option): string => {
+    if (Array.isArray(titleKey)) {
+      return [...titleKey].reverse().map(key => String(item[key] ?? "")).join("  ");
+    }
+    return String(item[titleKey] ?? "");
+  };
+
   const getSelectedTitles = () => {
     return selectedValues.map(value => {
       const item = data.find((item: Option) => String(item[valueKey]) === value);
-      return String(item?.[titleKey] || value);
+      return item ? getTitleFromItem(item) : value;
     });
   };
 
@@ -451,7 +458,7 @@ export const Select: React.FC<SelectProps> = ({
             )}
             {data?.map((item: Option) => {
               const itemValue = String(item[valueKey]);
-              const itemTitle = String(item[titleKey]);
+              const itemTitle = getTitleFromItem(item); // changed here
               const isSelected = selectedValues.includes(itemValue);
               return (
                 <div
