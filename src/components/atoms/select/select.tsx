@@ -11,11 +11,11 @@ type ColorKey =
 type Size = "sm" | "md" | "lg";
 
 type Option = {
-  [key: string]: string | number; // More specific typing for option values
+  [key: string]: string | number; 
 };
 
 type SelectProps = {
-  apiUrl?: string; // Made optional since we can use options instead
+  apiUrl?: string; 
   titleKey: string;
   valueKey: string;
   variant?: "contained" | "outlined" | "text";
@@ -23,21 +23,21 @@ type SelectProps = {
   loading?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
-  width?: string | number; // Custom width prop
+  width?: string | number; 
   size?: Size;
   multiple?: boolean;
   value?: Option | Option[] | undefined;
   onChange?: (value: Option | Option[]) => void;
-  searchParamKey?: string; // Optional: allows custom search param key
-  urlParams?: Record<string, string | number>; // Additional URL parameters
-  error?: string; // Error message to display
-  required?: boolean; // Whether the field is required
-  label?: string; // Optional label for the select
-  id?: string; // Unique identifier for the select
-  name?: string; // Name attribute for form handling
-  options?: Option[]; // Static options array
-  editMode?: boolean; // Whether the component is in edit mode
-  defaultValue?: string | string[]; // Default value for edit mode
+  searchParamKey?: string; 
+  urlParams?: Record<string, string | number>; 
+  error?: string; 
+  required?: boolean;
+  label?: string; 
+  id?: string; 
+  name?: string; 
+  options?: Option[]; 
+  editMode?: boolean; 
+  defaultValue?: string | string[]; 
 };
 
 const colorMap = {
@@ -112,7 +112,6 @@ export const Select: React.FC<SelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Initialize selected values based on edit mode and provided values
   const getInitialValues = () => {
     if (value !== undefined) {
       if (Array.isArray(value)) {
@@ -130,7 +129,6 @@ export const Select: React.FC<SelectProps> = ({
   
   const [selectedValues, setSelectedValues] = useState<string[]>(getInitialValues());
   
-  // Update selected values when value prop changes (for controlled component)
   useEffect(() => {
     if (value !== undefined) {
       if (Array.isArray(value)) {
@@ -145,7 +143,6 @@ export const Select: React.FC<SelectProps> = ({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const selectRef = useRef<HTMLDivElement>(null);
 
-  // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -153,7 +150,6 @@ export const Select: React.FC<SelectProps> = ({
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
@@ -170,7 +166,6 @@ export const Select: React.FC<SelectProps> = ({
     };
   }, [isOpen]);
 
-  // Infinite scroll state
   const [optionsData, setOptionsData] = useState<Option[]>([]);
   const [skip, setSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -178,14 +173,12 @@ export const Select: React.FC<SelectProps> = ({
   const limit = 10;
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch function for infinite scroll
   const fetchOptions = useCallback(async (reset = false) => {
     if (!apiUrl) return;
     setLoadingMore(true);
     const url = new URL(apiUrl);
     url.searchParams.set("limit", String(limit));
     url.searchParams.set("skip", String(reset ? 0 : skip));
-    // Add search and other params as needed
     if (debouncedSearch) {
       url.searchParams.set(searchParamKey, debouncedSearch);
     }
@@ -204,7 +197,6 @@ export const Select: React.FC<SelectProps> = ({
     else setSkip(prev => prev + limit);
   }, [apiUrl, skip, limit, debouncedSearch, searchParamKey, urlParams]);
 
-  // Initial and search fetch
   useEffect(() => {
     if (isOpen && apiUrl && !options) {
       fetchOptions(true);
@@ -212,14 +204,12 @@ export const Select: React.FC<SelectProps> = ({
     // eslint-disable-next-line
   }, [isOpen, debouncedSearch, apiUrl]);
 
-  // Reset optionsData if options prop is used
   useEffect(() => {
     if (options) {
       setOptionsData(options);
     }
   }, [options]);
 
-  // Scroll handler
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     if (scrollHeight - scrollTop <= clientHeight + 50 && hasMore && !loadingMore) {
@@ -227,7 +217,6 @@ export const Select: React.FC<SelectProps> = ({
     }
   };
 
-  // Use static options or API data
   const data: Option[] = options ? options : optionsData;
   const isDisabled = disabled || loading || loadingMore;
 
@@ -253,9 +242,9 @@ export const Select: React.FC<SelectProps> = ({
   const getCustomWidthStyle = () => {
     if (fullWidth) return 'w-full';
     if (width) {
-      return ''; // We'll handle custom width with inline styles
+      return ''; 
     }
-    return 'min-w-[400px] w-auto'; // Default min width 400px, allow to grow
+    return 'min-w-[400px] w-auto'; 
   };
 
   const getInlineWidthStyle = () => {
@@ -334,7 +323,6 @@ export const Select: React.FC<SelectProps> = ({
 
   return (
     <div className={`${fullWidth ? 'w-full' : ''}`} style={getInlineWidthStyle()}>
-      {/* Label */}
       {label && (
         <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
           {label}
@@ -342,7 +330,6 @@ export const Select: React.FC<SelectProps> = ({
         </label>
       )}
       
-      {/* Select Container */}
       <div 
         className={`relative ${fullWidth ? 'w-full' : ''}`} 
         style={getInlineWidthStyle()}
@@ -447,7 +434,6 @@ export const Select: React.FC<SelectProps> = ({
             onScroll={handleScroll}
             className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
           >
-            {/* Search bar */}
             <div className="p-2 border-b border-gray-200 bg-gray-50">
               <input
                 type="text"
@@ -459,7 +445,6 @@ export const Select: React.FC<SelectProps> = ({
                 onClick={e => e.stopPropagation()}
               />
             </div>
-            {/* Loading indicator for list only */}
             {loading && <div className="px-3 py-2 text-gray-500">Loading...</div>}
             {data?.length === 0 && !loading && (
               <div className="px-3 py-2 text-gray-400">No options</div>
@@ -496,7 +481,6 @@ export const Select: React.FC<SelectProps> = ({
         )}
       </div>
 
-      {/* Error Message */}
       {error && (
         <p id={`${id}-error`} className="mt-1 text-sm text-red-600 flex items-center">
           <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
