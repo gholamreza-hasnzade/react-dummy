@@ -26,7 +26,7 @@ type SelectProps = {
   width?: string | number; // Custom width prop
   size?: Size;
   multiple?: boolean;
-  value?: string | string[];
+  value?: Option | Option[] | undefined;
   onChange?: (value: Option | Option[]) => void;
   searchParamKey?: string; // Optional: allows custom search param key
   urlParams?: Record<string, string | number>; // Additional URL parameters
@@ -115,7 +115,12 @@ export const Select: React.FC<SelectProps> = ({
   // Initialize selected values based on edit mode and provided values
   const getInitialValues = () => {
     if (value !== undefined) {
-      return Array.isArray(value) ? value : [value];
+      if (Array.isArray(value)) {
+        return value.map(v => String(v[valueKey]));
+      } else if (typeof value === 'object' && value !== null) {
+        return [String(value[valueKey])];
+      }
+      return [];
     }
     if (editMode && defaultValue !== undefined) {
       return Array.isArray(defaultValue) ? defaultValue : [defaultValue];
@@ -128,7 +133,11 @@ export const Select: React.FC<SelectProps> = ({
   // Update selected values when value prop changes (for controlled component)
   useEffect(() => {
     if (value !== undefined) {
-      setSelectedValues(Array.isArray(value) ? value : [value]);
+      if (Array.isArray(value)) {
+        setSelectedValues(value.map(v => String(v[valueKey])));
+      } else if (typeof value === 'object' && value !== null) {
+        setSelectedValues([String(value[valueKey])]);
+      }
     }
   }, [value]);
 
