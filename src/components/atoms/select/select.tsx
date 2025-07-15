@@ -28,7 +28,7 @@ type SelectProps = {
   size?: Size;
   multiple?: boolean;
   value?: string | string[];
-  onChange?: (value: string | string[]) => void;
+  onChange?: (value: Option | Option[]) => void;
   searchParamKey?: string; // Optional: allows custom search param key
   urlParams?: Record<string, string | number>; // Additional URL parameters
   error?: string; // Error message to display
@@ -37,6 +37,8 @@ type SelectProps = {
   id?: string; // Unique identifier for the select
   name?: string; // Name attribute for form handling
   options?: Option[]; // Static options array
+  editMode?: boolean; // Whether the component is in edit mode
+  defaultValue?: string | string[]; // Default value for edit mode
 };
 
 const colorMap = {
@@ -106,11 +108,31 @@ export const Select: React.FC<SelectProps> = ({
   id,
   name,
   options,
+  editMode = false,
+  defaultValue,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedValues, setSelectedValues] = useState<string[]>(
-    Array.isArray(value) ? value : value ? [value] : []
-  );
+  
+  // Initialize selected values based on edit mode and provided values
+  const getInitialValues = () => {
+    if (value !== undefined) {
+      return Array.isArray(value) ? value : [value];
+    }
+    if (editMode && defaultValue !== undefined) {
+      return Array.isArray(defaultValue) ? defaultValue : [defaultValue];
+    }
+    return [];
+  };
+  
+  const [selectedValues, setSelectedValues] = useState<string[]>(getInitialValues());
+  
+  // Update selected values when value prop changes (for controlled component)
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedValues(Array.isArray(value) ? value : [value]);
+    }
+  }, [value]);
+
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const selectRef = useRef<HTMLDivElement>(null);
@@ -211,7 +233,7 @@ export const Select: React.FC<SelectProps> = ({
     if (width) {
       return ''; // We'll handle custom width with inline styles
     }
-    return 'min-w-[150px]';
+    return 'min-w-[400px] w-auto'; // Default min width 400px, allow to grow
   };
 
   const getInlineWidthStyle = () => {
@@ -247,10 +269,16 @@ export const Select: React.FC<SelectProps> = ({
         : [...selectedValues, selectedValue];
       
       setSelectedValues(newSelectedValues);
-      onChange?.(newSelectedValues);
+      const selectedObjects = data.filter((item: Option) =>
+        newSelectedValues.includes(String(item[valueKey]))
+      );
+      onChange?.(selectedObjects);
     } else {
       setSelectedValues([selectedValue]);
-      onChange?.(selectedValue);
+      const selectedObject = data.find((item: Option) => String(item[valueKey]) === selectedValue);
+      if (selectedObject) {
+        onChange?.(selectedObject);
+      }
       setIsOpen(false);
     }
   };
@@ -258,7 +286,10 @@ export const Select: React.FC<SelectProps> = ({
   const handleRemove = (valueToRemove: string) => {
     const newSelectedValues = selectedValues.filter(v => v !== valueToRemove);
     setSelectedValues(newSelectedValues);
-    onChange?.(newSelectedValues);
+    const selectedObjects = data.filter((item: Option) =>
+      newSelectedValues.includes(String(item[valueKey]))
+    );
+    onChange?.(selectedObjects);
   };
 
   const getSelectedTitles = () => {
@@ -367,11 +398,14 @@ export const Select: React.FC<SelectProps> = ({
                   })()}
                 </>
               ) : (
-                <span className="text-gray-500">Select options...</span>
+                <span className="text-gray-500">
+                  {editMode ? "No items selected" : "Select options..."}
+                </span>
               )
             ) : (
               <span>
-                {selectedValues.length > 0 ? getSelectedTitles()[0] : "Select an option"}
+                {selectedValues.length > 0 ? getSelectedTitles()[0] : 
+                  editMode ? "No option selected" : "Select an option"}
               </span>
             )}
           </div>
@@ -418,7 +452,12 @@ export const Select: React.FC<SelectProps> = ({
                     }`}
                     onClick={() => handleSelect(itemValue)}
                   >
-                    <span>{itemTitle}</span>
+                    <span
+                      className="truncate max-w-[400px] block"
+                      title={itemTitle}
+                    >
+                      {itemTitle.length > 100 ? itemTitle.slice(0, 100) + '...' : itemTitle}
+                    </span>
                     {isSelected && (
                       <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />

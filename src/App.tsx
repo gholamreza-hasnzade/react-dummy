@@ -1,28 +1,13 @@
-import { useState } from "react";
-/* import { Button } from "./components/atoms/button/button";
-import { Input } from "./components/atoms/input/input"; */
+
 import { Select } from "./components/atoms/select/select";
 
 export const App = () => {
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   return (
     <div className="flex items-center gap-5 w-full ">
-      {/*  <Input
-        id="wer"
-        value=""
-        label="Input"
-        onChange={() => {}}
-        required
-        placeholder="placeholder"
-        size="lg"
-        fullWidth
-      />
-      <Button variant="text" color="info" startIcon={"1"} endIcon="2" disabled>
-        test
-      </Button> */}
+
       <Select
         apiUrl="https://dummyjson.com/products"
-        /* options={[
+   /*       options={[
           {
             id: 1,
             title: "test",
@@ -48,13 +33,15 @@ export const App = () => {
         }}  */
         variant="outlined"
         color="primary"
-        multiple={false}
-        value={selectedValues}
-        onChange={(values) => setSelectedValues(values as string[])}
+        multiple={true}
+        onChange={(values) => console.log('Selected values:', values)}
         label="Choose Category"
+        defaultValue={["2"]} // Pre-selected values
         /*  error="This field is required"
         required */
         id="test-select"
+        editMode={true}
+        
       />
     </div>
   );
