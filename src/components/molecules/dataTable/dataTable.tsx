@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { Row } from '@tanstack/react-table';
 import {
   useReactTable,
@@ -7,8 +7,12 @@ import {
   flexRender,
   type ColumnDef,
 } from '@tanstack/react-table';
+import { ActionsDropdown } from './ActionsDropdown';
+
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { DataTableHeader } from './DataTableHeader';
+import { DataTablePagination } from './DataTablePagination';
 
 interface Action<T> {
   label: string;
@@ -22,6 +26,7 @@ interface DataTableProps<T extends object> {
   pageSizeOptions?: number[];
   initialPageSize?: number;
   actions?: Action<T>[];
+  actionsHorizontal?: boolean;
 }
 
 interface ApiResponse<T> {
@@ -36,6 +41,7 @@ export function DataTable<T extends object>({
   pageSizeOptions = [10, 20, 30, 50],
   initialPageSize = 10,
   actions,
+  actionsHorizontal = false,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -82,7 +88,7 @@ export function DataTable<T extends object>({
 
   // Add actions column if actions are provided
   const columnsWithActions = React.useMemo(() => {
-    if (!actions) return columns;
+    if (!actions || actionsHorizontal) return columns;
     return [
       ...columns,
       {
@@ -94,7 +100,26 @@ export function DataTable<T extends object>({
         meta: { isAction: true },
       },
     ];
-  }, [columns, actions]);
+  }, [columns, actions, actionsHorizontal]);
+
+  // Inline ActionsRow component
+  function ActionsRow({ actions, row }: { actions: Action<T>[]; row: T }) {
+    return (
+      <div className="flex gap-2">
+        {actions.map((action, idx) => (
+          <button
+            key={action.label + idx}
+            className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-sm flex items-center gap-1"
+            onClick={() => action.onClick(row)}
+            type="button"
+          >
+            {action.icon && <span>{action.icon}</span>}
+            {action.label}
+          </button>
+        ))}
+      </div>
+    );
+  }
 
   const table = useReactTable({
     data,
@@ -118,6 +143,8 @@ export function DataTable<T extends object>({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const computedPageCount = table.getPageCount();
+
   return (
     <div className="flex flex-col w-full max-w-full">
       <div className="overflow-x-auto w-full">
@@ -125,26 +152,7 @@ export function DataTable<T extends object>({
           <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
             <div className="max-h-96 min-h-[20rem] overflow-y-auto w-full">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50 sticky top-0 z-10">
-                  {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map(header => (
-                        <th
-                          key={header.id}
-                          className={
-                            `px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200 ` +
-                            (header.column.id === 'actions' ? 'sticky right-0 z-20' : '')
-                          }
-                          style={header.column.id === 'actions' ? { width: 150, minWidth: 150, maxWidth: 150 } : {}}
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
+                <DataTableHeader table={table} actionsHorizontal={actionsHorizontal} />
                 <tbody className="bg-white divide-y divide-gray-100">
                   {loading ? (
                     Array.from({ length: 5 }).map((_, rowIdx) => (
@@ -171,19 +179,35 @@ export function DataTable<T extends object>({
                   ) : (
                     table.getRowModel().rows.map((row, idx) => (
                       <tr key={row.id} className={`hover:bg-blue-50 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}> 
-                        {row.getVisibleCells().map(cell => (
-                          <td
-                            key={cell.id}
-                            className={
-                              cell.column.id === 'actions'
-                                ? 'px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium sticky right-0 z-10'
-                                : 'px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium'
-                            }
-                            style={cell.column.id === 'actions' ? { width: 150, minWidth: 150, maxWidth: 150 } : {}}
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
-                        ))}
+                        {actionsHorizontal ? (
+                          <>
+                            {row.getVisibleCells().map(cell => (
+                              <td
+                                key={cell.id}
+                                className="px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium"
+                              >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </td>
+                            ))}
+                            <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium">
+                              <ActionsRow actions={actions ?? []} row={row.original} />
+                            </td>
+                          </>
+                        ) : (
+                          row.getVisibleCells().map(cell => (
+                            <td
+                              key={cell.id}
+                              className={
+                                cell.column.id === 'actions'
+                                  ? 'px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium sticky right-0 z-10'
+                                  : 'px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium'
+                              }
+                              style={cell.column.id === 'actions' ? { width: 150, minWidth: 150, maxWidth: 150 } : {}}
+                            >
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                          ))
+                        )}
                       </tr>
                     ))
                   )}
@@ -193,112 +217,17 @@ export function DataTable<T extends object>({
           </div>
         </div>
       </div>
-      {/* Pagination Controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2 w-full">
-        <div className="flex items-center gap-2">
-          <button
-            className="px-2 py-1 border rounded bg-white hover:bg-gray-100 transition disabled:opacity-50"
-            onClick={() => table.setPageIndex(0)}
-            disabled={pageIndex === 0 || loading}
-          >
-            {'<<'}
-          </button>
-          <button
-            className="px-2 py-1 border rounded bg-white hover:bg-gray-100 transition disabled:opacity-50"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage() || loading}
-          >
-            {'<'}
-          </button>
-          <button
-            className="px-2 py-1 border rounded bg-white hover:bg-gray-100 transition disabled:opacity-50"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage() || loading}
-          >
-            {'>'}
-          </button>
-          <button
-            className="px-2 py-1 border rounded bg-white hover:bg-gray-100 transition disabled:opacity-50"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={pageIndex >= table.getPageCount() - 1 || loading}
-          >
-            {'>>'}
-          </button>
-          <span className="ml-2 text-sm text-gray-700">
-            Page{' '}
-            <strong>
-              {pageIndex + 1} of {table.getPageCount()}
-            </strong>
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-700">Rows per page:</span>
-          <select
-            className="border rounded px-2 py-1 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
-            value={pageSize}
-            onChange={e => {
-              setPageSize(Number(e.target.value));
-              setPageIndex(0);
-            }}
-            disabled={loading}
-          >
-            {pageSizeOptions.map(size => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <DataTablePagination
+        table={table}
+        pageIndex={pageIndex}
+        setPageIndex={setPageIndex}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        pageSizeOptions={pageSizeOptions}
+        loading={loading}
+        computedPageCount={computedPageCount}
+      />
     </div>
   );
 }
 
-// Simple dropdown for actions
-function ActionsDropdown<T>({ actions, row }: { actions: Action<T>[]; row: T }) {
-  const [open, setOpen] = React.useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [open]);
-
-  return (
-    <div className="relative flex justify-center items-center" ref={ref}>
-      <button
-        className="p-2 rounded-full  transition"
-        onClick={() => setOpen(o => !o)}
-        type="button"
-        aria-label="Actions"
-      >
-        <svg width="20" height="20" fill="none" viewBox="0 0 20 20" stroke="currentColor">
-          <circle cx="10" cy="4" r="1.5" />
-          <circle cx="10" cy="10" r="1.5" />
-          <circle cx="10" cy="16" r="1.5" />
-        </svg>
-      </button>
-      {open && (
-        <div className="absolute top-full -right-24 mt-2 w-36 bg-white border rounded shadow-lg z-30">
-          {actions.map((action, idx) => (
-            <button
-              key={action.label + idx}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 text-right"
-              onClick={() => { action.onClick(row); setOpen(false); }}
-              type="button"
-            >
-              {action.icon && <span>{action.icon}</span>}
-              {action.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}

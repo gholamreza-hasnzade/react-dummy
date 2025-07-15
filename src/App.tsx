@@ -36,9 +36,9 @@ export  const App = () => {
             icon: 'edit'
           },
           {
-            label: "Edit",
-            onClick: (row) => { console.log("Edit", row); },
-            icon: 'edit'
+            label: "Delete",
+            onClick: (row) => { console.log("Delete", row); },
+            icon: 'delete'
           },
         ]}
       />
