@@ -1,8 +1,6 @@
 import { DataTable } from "./components/molecules/dataTable/dataTable";
 import type { ColumnDef } from "@tanstack/react-table";
-import React from "react";
 
-// Example product type
 interface Product {
   id: number;
   title: string;
@@ -101,17 +99,15 @@ const deleteIcon = (
 );
 
 export const App = () => {
- 
-
   return (
     <div className="p-8">
       <DataTable<Product>
         dataSource={"https://dummyjson.com/products"}
         columns={columns}
         actionsHorizontal={false}
-        enableColumnVisibility={true}
-        enableColumnFiltering={true}
-        enableGlobalFilter={true}
+        enableColumnVisibility={false}
+        enableColumnFiltering={false}
+        enableGlobalFilter={false}
         globalFilterPlaceholder="Search products..."
         searchEndpoint="https://dummyjson.com/products/search"
         debounceMs={500}
@@ -119,7 +115,7 @@ export const App = () => {
           id: true,
           title: true,
           price: true,
-          brand: true, // This column will be hidden initially
+          brand: true,
         }}
         getRowId={(row) => String(row.id)}
         actions={[
@@ -145,10 +141,9 @@ export const App = () => {
             icon: deleteIcon,
           },
         ]}
-        onRowSelectionChange={(selectedRowsOnPage) => {
-          // selectedRowsOnPage is always the selected rows from the current page
+       /*  onRowSelectionChange={(selectedRowsOnPage) => {
           console.log(selectedRowsOnPage);
-        }}
+        }} */
       />
     </div>
   );

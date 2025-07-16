@@ -37,7 +37,6 @@ export const DataTableHeader = <T extends object>({
 }) => {
   return (
     <thead className="bg-gray-50 sticky top-0 z-10">
-      {/* Column Visibility Controls Row */}
       {enableColumnVisibility && (
         <tr>
           <th colSpan={table.getAllColumns().length + (actionsHorizontal ? 1 : 0)} className="px-6 py-2 bg-gray-50 border-b border-gray-200">
@@ -51,7 +50,6 @@ export const DataTableHeader = <T extends object>({
         </tr>
       )}
       
-      {/* Column Headers Row */}
       {table.getHeaderGroups().map((headerGroup) => (
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header) => (
@@ -108,7 +106,6 @@ export const DataTableHeader = <T extends object>({
         </tr>
       ))}
       
-      {/* Column Filters Row */}
       {enableColumnFiltering && (
         <tr>
           {table.getVisibleLeafColumns().map((column) => (
@@ -116,13 +113,13 @@ export const DataTableHeader = <T extends object>({
               {column.getCanFilter() ? (
                 <ColumnFilter column={column} />
               ) : (
-                <div className="h-8" /> // Placeholder for non-filterable columns
+                <div className="h-8" /> 
               )}
             </th>
           ))}
           {actionsHorizontal && (
             <th className="px-6 py-2 bg-gray-50 border-b border-gray-200">
-              <div className="h-8" /> {/* Placeholder for actions column */}
+              <div className="h-8" /> 
             </th>
           )}
         </tr>

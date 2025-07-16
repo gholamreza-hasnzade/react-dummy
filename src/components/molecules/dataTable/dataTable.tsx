@@ -221,8 +221,13 @@ export function DataTable<T extends object>({
   );
 
   const columnsWithSelection = React.useMemo(
-    () => [selectionColumn, ...columnsWithActions],
-    [selectionColumn, columnsWithActions]
+    () => {
+      if (onRowSelectionChange) {
+        return [selectionColumn, ...columnsWithActions];
+      }
+      return columnsWithActions;
+    },
+    [selectionColumn, columnsWithActions, onRowSelectionChange]
   );
 
   function ActionsRow({ actions, row }: { actions: Action<T>[]; row: T }) {
