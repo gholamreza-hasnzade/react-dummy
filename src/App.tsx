@@ -88,6 +88,9 @@ export const App = () => {
         actionsHorizontal={false}
         enableColumnVisibility={true}
         enableColumnFiltering={true}
+        enableGlobalFilter={true}
+        globalFilterPlaceholder="Search products..."
+        searchEndpoint="https://dummyjson.com/products/search"
         initialColumnVisibility={{
           id: true,
           title: true,

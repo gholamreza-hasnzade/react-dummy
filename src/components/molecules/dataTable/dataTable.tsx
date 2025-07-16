@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { DataTablePagination } from './DataTablePagination';
 import { DataTableHeader } from './DataTableHeader';
+import { DataTableToolbar } from './DataTableToolbar';
 
 interface Action<T> {
   label: string;
@@ -31,6 +32,9 @@ interface DataTableProps<T extends object> {
   enableColumnVisibility?: boolean;
   initialColumnVisibility?: Record<string, boolean>;
   enableColumnFiltering?: boolean;
+  enableGlobalFilter?: boolean;
+  globalFilterPlaceholder?: string;
+  searchEndpoint?: string;
 }
 
 interface ApiResponse<T> {
@@ -49,12 +53,16 @@ export function DataTable<T extends object>({
   enableColumnVisibility = true,
   initialColumnVisibility = {},
   enableColumnFiltering = true,
+  enableGlobalFilter = true,
+  globalFilterPlaceholder = "Search all columns...",
+  searchEndpoint,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [columnSizing, setColumnSizing] = useState({});
   const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
   const [columnFilters, setColumnFilters] = useState<Array<{ id: string; value: unknown }>>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
 
   // For client-side data
   const isClientData = Array.isArray(dataSource);
@@ -71,12 +79,31 @@ export function DataTable<T extends object>({
     error,
   } = useQuery<{ items: T[]; total: number }>(
     {
-      queryKey: [typeof dataSource === 'string' ? dataSource : '', pageIndex, pageSize],
+      queryKey: [
+        typeof dataSource === 'string' ? dataSource : '', 
+        pageIndex, 
+        pageSize, 
+        globalFilter
+      ],
       queryFn: async () => {
         if (typeof dataSource === 'string') {
-          const url = new URL(dataSource, window.location.origin);
+          let url: URL;
+          
+          // Use search endpoint if global filter is provided and search endpoint is configured
+          if (globalFilter && searchEndpoint) {
+            url = new URL(searchEndpoint, window.location.origin);
+            url.searchParams.set('q', globalFilter);
+          } else {
+            url = new URL(dataSource, window.location.origin);
+            // Add search query to main endpoint if no search endpoint is provided
+            if (globalFilter) {
+              url.searchParams.set('q', globalFilter);
+            }
+          }
+          
           url.searchParams.set('limit', pageSize.toString());
           url.searchParams.set('skip', (pageIndex * pageSize).toString());
+          
           const res = await axios.get(url.toString());
           const json: ApiResponse<T> = res.data;
           return {
@@ -140,6 +167,7 @@ export function DataTable<T extends object>({
       columnSizing,
       columnVisibility: enableColumnVisibility ? columnVisibility : {},
       columnFilters: enableColumnFiltering ? columnFilters : [],
+      globalFilter: enableGlobalFilter ? globalFilter : '',
     },
     manualPagination: true,
     onPaginationChange: updater => {
@@ -154,8 +182,9 @@ export function DataTable<T extends object>({
     },
     onColumnVisibilityChange: enableColumnVisibility ? setColumnVisibility : undefined,
     onColumnFiltersChange: enableColumnFiltering ? setColumnFilters : undefined,
+    onGlobalFilterChange: enableGlobalFilter ? setGlobalFilter : undefined,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: enableColumnFiltering ? getFilteredRowModel() : undefined,
+    getFilteredRowModel: (enableColumnFiltering || enableGlobalFilter) ? getFilteredRowModel() : undefined,
     getPaginationRowModel: getPaginationRowModel(),
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
@@ -166,6 +195,11 @@ export function DataTable<T extends object>({
 
   return (
     <div className="flex flex-col w-full max-w-full">
+      <DataTableToolbar 
+        table={table} 
+        enableGlobalFilter={enableGlobalFilter}
+        globalFilterPlaceholder={globalFilterPlaceholder}
+      />
       <div className="overflow-x-auto w-full">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
