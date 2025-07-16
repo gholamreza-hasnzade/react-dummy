@@ -47,6 +47,37 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableColumnFilter: false,
     enableSorting: false,
   },
+  {
+    accessorKey: "description",
+    header: "description",
+    enableHiding: true,
+    enableColumnFilter: false,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "minimumOrderQuantity",
+    header: "minimumOrderQuantity",
+    enableHiding: true,
+    enableColumnFilter: false,
+    enableSorting: false,
+    size: 400,
+  },
+  {
+    accessorKey: "stock",
+    header: "stock",
+    enableHiding: true,
+    enableColumnFilter: false,
+    enableSorting: false,
+    size: 300,
+  },
+  {
+    accessorKey: "sku",
+    header: "sku",
+    enableHiding: true,
+    enableColumnFilter: false,
+    enableSorting: false,
+    size: 100,
+  },
 ];
 
 const viewIcon = (
@@ -141,7 +172,7 @@ export const App = () => {
             icon: deleteIcon,
           },
         ]}
-       /*  onRowSelectionChange={(selectedRowsOnPage) => {
+        /*  onRowSelectionChange={(selectedRowsOnPage) => {
           console.log(selectedRowsOnPage);
         }} */
       />
