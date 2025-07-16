@@ -2,6 +2,28 @@ import type { Table } from "@tanstack/react-table";
 import { ColumnVisibilityToggle } from "./ColumnVisibilityToggle";
 import { ColumnFilter } from "./ColumnFilter";
 
+const SortIcon = ({ sorted }: { sorted: false | 'asc' | 'desc' }) => {
+  if (!sorted) {
+    return (
+      <svg width="12" height="12" className="inline ml-1 opacity-30" viewBox="0 0 20 20" fill="none">
+        <path d="M7 8l3 3 3-3" stroke="currentColor" strokeWidth="2" fill="none"/>
+      </svg>
+    );
+  }
+  if (sorted === "asc") {
+    return (
+      <svg width="12" height="12" className="inline ml-1 text-blue-600" viewBox="0 0 20 20" fill="none">
+        <path d="M7 12l3-3 3 3" stroke="currentColor" strokeWidth="2" fill="none"/>
+      </svg>
+    );
+  }
+  return (
+    <svg width="12" height="12" className="inline ml-1 text-blue-600" viewBox="0 0 20 20" fill="none">
+      <path d="M7 8l3 3 3-3" stroke="currentColor" strokeWidth="2" fill="none"/>
+    </svg>
+  );
+};
+
 export const DataTableHeader = <T extends object>({
   table,
   actionsHorizontal = false,
@@ -56,12 +78,26 @@ export const DataTableHeader = <T extends object>({
                   : {}),
               }}
             >
-              {header.isPlaceholder
-                ? null
-                : header.column.columnDef.header &&
+              {header.isPlaceholder ? null : (
+                header.column.getCanSort() ? (
+                  <button
+                    type="button"
+                    onClick={header.column.getToggleSortingHandler()}
+                    className="group inline-flex items-center select-none focus:outline-none"
+                    style={{ background: "none", border: "none", padding: 0, margin: 0, cursor: "pointer" }}
+                    tabIndex={0}
+                  >
+                    {typeof header.column.columnDef.header === "function"
+                      ? header.column.columnDef.header(header.getContext())
+                      : header.column.columnDef.header}
+                    <SortIcon sorted={header.column.getIsSorted()} />
+                  </button>
+                ) : (
                   typeof header.column.columnDef.header === "function"
-                ? header.column.columnDef.header(header.getContext())
-                : header.column.columnDef.header}
+                    ? header.column.columnDef.header(header.getContext())
+                    : header.column.columnDef.header
+                )
+              )}
             </th>
           ))}
           {actionsHorizontal && (

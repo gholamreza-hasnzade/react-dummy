@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Row } from '@tanstack/react-table';
+import type { Row, SortingState } from '@tanstack/react-table';
 import {
   useReactTable,
   getCoreRowModel,
@@ -65,6 +65,7 @@ export function DataTable<T extends object>({
   const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
   const [columnFilters, setColumnFilters] = useState<Array<{ id: string; value: unknown }>>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   // For client-side data
   const isClientData = Array.isArray(dataSource);
@@ -74,6 +75,9 @@ export function DataTable<T extends object>({
   const clientTotal = isClientData ? (dataSource as T[]).length : 0;
 
   // For API data
+  const sortBy = sorting[0]?.id;
+  const order = sorting[0]?.desc ? "desc" : "asc";
+
   const {
     data: apiData,
     isLoading,
@@ -85,7 +89,8 @@ export function DataTable<T extends object>({
         typeof dataSource === 'string' ? dataSource : '', 
         pageIndex, 
         pageSize, 
-        globalFilter
+        globalFilter,
+        sorting,
       ],
       queryFn: async () => {
         if (typeof dataSource === 'string') {
@@ -105,6 +110,8 @@ export function DataTable<T extends object>({
           
           url.searchParams.set('limit', pageSize.toString());
           url.searchParams.set('skip', (pageIndex * pageSize).toString());
+          if (sortBy) url.searchParams.set("sortBy", sortBy);
+          if (sortBy) url.searchParams.set("order", order);
           
           const res = await axios.get(url.toString());
           const json: ApiResponse<T> = res.data;
@@ -170,8 +177,10 @@ export function DataTable<T extends object>({
       columnVisibility: enableColumnVisibility ? columnVisibility : {},
       columnFilters: enableColumnFiltering ? columnFilters : [],
       globalFilter: enableGlobalFilter ? globalFilter : '',
+      sorting,
     },
     manualPagination: true,
+    manualSorting: true,
     onPaginationChange: updater => {
       if (typeof updater === 'function') {
         const next = updater({ pageIndex, pageSize });
@@ -182,6 +191,7 @@ export function DataTable<T extends object>({
         setPageSize(updater.pageSize);
       }
     },
+    onSortingChange: setSorting,
     onColumnVisibilityChange: enableColumnVisibility ? setColumnVisibility : undefined,
     onColumnFiltersChange: enableColumnFiltering ? setColumnFilters : undefined,
     onGlobalFilterChange: enableGlobalFilter ? setGlobalFilter : undefined,

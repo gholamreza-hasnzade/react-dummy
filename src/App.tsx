@@ -10,13 +10,21 @@ interface Product {
 }
 
 const columns: ColumnDef<Product, unknown>[] = [
-  { accessorKey: "id", header: "ID", size: 50, enableHiding: true, enableColumnFilter: false },
+  {
+    accessorKey: "id",
+    header: "ID",
+    size: 50,
+    enableHiding: true,
+    enableColumnFilter: false,
+    enableSorting: false,
+  },
   {
     size: 140,
     accessorKey: "title",
     header: "Title",
     enableHiding: true,
     enableColumnFilter: false,
+    enableSorting: false,
     cell: ({ getValue }) => (
       <span className="font-bold text-blue-600 flex items-center gap-2">
         <svg width="16" height="16" fill="currentColor">
@@ -26,8 +34,20 @@ const columns: ColumnDef<Product, unknown>[] = [
       </span>
     ),
   },
-  { accessorKey: "price", header: "Price", enableHiding: true, enableColumnFilter: false },
-  { accessorKey: "brand", header: "Brand", enableHiding: true, enableColumnFilter: false },
+  {
+    accessorKey: "price",
+    header: "Price",
+    enableHiding: true,
+    enableColumnFilter: false,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "brand",
+    header: "Brand",
+    enableHiding: true,
+    enableColumnFilter: false,
+    enableSorting: false,
+  },
 ];
 
 const viewIcon = (
