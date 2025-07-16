@@ -10,12 +10,13 @@ interface Product {
 }
 
 const columns: ColumnDef<Product, unknown>[] = [
-  { accessorKey: "id", header: "ID", size: 250, enableHiding: true },
+  { accessorKey: "id", header: "ID", size: 250, enableHiding: true, enableColumnFilter: false },
   {
     size: 32,
     accessorKey: "title",
     header: "Title",
     enableHiding: true,
+    enableColumnFilter: false,
     cell: ({ getValue }) => (
       <span className="font-bold text-blue-600 flex items-center gap-2">
         <svg width="16" height="16" fill="currentColor">
@@ -25,8 +26,8 @@ const columns: ColumnDef<Product, unknown>[] = [
       </span>
     ),
   },
-  { accessorKey: "price", header: "Price", enableHiding: true },
-  { accessorKey: "brand", header: "Brand", enableHiding: true },
+  { accessorKey: "price", header: "Price", enableHiding: true, enableColumnFilter: false },
+  { accessorKey: "brand", header: "Brand", enableHiding: true, enableColumnFilter: false },
 ];
 
 const viewIcon = (
@@ -86,11 +87,12 @@ export const App = () => {
         columns={columns}
         actionsHorizontal={false}
         enableColumnVisibility={true}
+        enableColumnFiltering={true}
         initialColumnVisibility={{
           id: true,
           title: true,
           price: true,
-          brand: false, // This column will be hidden initially
+          brand: true, // This column will be hidden initially
         }}
         actions={[
           {

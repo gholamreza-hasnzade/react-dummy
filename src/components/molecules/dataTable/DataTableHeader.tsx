@@ -1,14 +1,17 @@
 import type { Table } from "@tanstack/react-table";
 import { ColumnVisibilityToggle } from "./ColumnVisibilityToggle";
+import { ColumnFilter } from "./ColumnFilter";
 
 export const DataTableHeader = <T extends object>({
   table,
   actionsHorizontal = false,
   enableColumnVisibility = true,
+  enableColumnFiltering = true,
 }: {
   table: Table<T>;
   actionsHorizontal?: boolean;
   enableColumnVisibility?: boolean;
+  enableColumnFiltering?: boolean;
 }) => {
   return (
     <thead className="bg-gray-50 sticky top-0 z-10">
@@ -68,6 +71,26 @@ export const DataTableHeader = <T extends object>({
           )}
         </tr>
       ))}
+      
+      {/* Column Filters Row */}
+      {enableColumnFiltering && (
+        <tr>
+          {table.getVisibleLeafColumns().map((column) => (
+            <th key={column.id} className="px-6 py-2 bg-gray-50 border-b border-gray-200">
+              {column.getCanFilter() ? (
+                <ColumnFilter column={column} />
+              ) : (
+                <div className="h-8" /> // Placeholder for non-filterable columns
+              )}
+            </th>
+          ))}
+          {actionsHorizontal && (
+            <th className="px-6 py-2 bg-gray-50 border-b border-gray-200">
+              <div className="h-8" /> {/* Placeholder for actions column */}
+            </th>
+          )}
+        </tr>
+      )}
     </thead>
   );
 };

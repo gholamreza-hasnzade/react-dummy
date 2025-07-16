@@ -4,6 +4,7 @@ import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
+  getFilteredRowModel,
   flexRender,
   type ColumnDef,
 } from '@tanstack/react-table';
@@ -29,6 +30,7 @@ interface DataTableProps<T extends object> {
   actionsHorizontal?: boolean;
   enableColumnVisibility?: boolean;
   initialColumnVisibility?: Record<string, boolean>;
+  enableColumnFiltering?: boolean;
 }
 
 interface ApiResponse<T> {
@@ -46,11 +48,13 @@ export function DataTable<T extends object>({
   actionsHorizontal = false,
   enableColumnVisibility = true,
   initialColumnVisibility = {},
+  enableColumnFiltering = true,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [columnSizing, setColumnSizing] = useState({});
   const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
+  const [columnFilters, setColumnFilters] = useState<Array<{ id: string; value: unknown }>>([]);
 
   // For client-side data
   const isClientData = Array.isArray(dataSource);
@@ -135,6 +139,7 @@ export function DataTable<T extends object>({
       pagination: { pageIndex, pageSize },
       columnSizing,
       columnVisibility: enableColumnVisibility ? columnVisibility : {},
+      columnFilters: enableColumnFiltering ? columnFilters : [],
     },
     manualPagination: true,
     onPaginationChange: updater => {
@@ -148,7 +153,9 @@ export function DataTable<T extends object>({
       }
     },
     onColumnVisibilityChange: enableColumnVisibility ? setColumnVisibility : undefined,
+    onColumnFiltersChange: enableColumnFiltering ? setColumnFilters : undefined,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: enableColumnFiltering ? getFilteredRowModel() : undefined,
     getPaginationRowModel: getPaginationRowModel(),
     enableColumnResizing: true,
     columnResizeMode: 'onChange',
@@ -164,7 +171,7 @@ export function DataTable<T extends object>({
           <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
             <div className="max-h-96 min-h-[20rem] overflow-y-auto w-full">
               <table className="min-w-full divide-y divide-gray-200">
-                <DataTableHeader table={table} actionsHorizontal={actionsHorizontal} enableColumnVisibility={enableColumnVisibility} />
+                <DataTableHeader table={table} actionsHorizontal={actionsHorizontal} enableColumnVisibility={enableColumnVisibility} enableColumnFiltering={enableColumnFiltering} />
                 <tbody className="bg-white divide-y divide-gray-100">
                   {loading ? (
                     Array.from({ length: 5 }).map((_, rowIdx) => (
