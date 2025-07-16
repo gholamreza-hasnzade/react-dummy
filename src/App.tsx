@@ -10,9 +10,9 @@ interface Product {
 }
 
 const columns: ColumnDef<Product, unknown>[] = [
-  { accessorKey: "id", header: "ID", size: 250, enableHiding: true, enableColumnFilter: false },
+  { accessorKey: "id", header: "ID", size: 50, enableHiding: true, enableColumnFilter: false },
   {
-    size: 32,
+    size: 140,
     accessorKey: "title",
     header: "Title",
     enableHiding: true,
