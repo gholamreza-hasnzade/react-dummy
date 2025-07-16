@@ -10,11 +10,12 @@ interface Product {
 }
 
 const columns: ColumnDef<Product, unknown>[] = [
-  { accessorKey: "id", header: "ID", size: 50 },
+  { accessorKey: "id", header: "ID", size: 250, enableHiding: true },
   {
     size: 32,
     accessorKey: "title",
     header: "Title",
+    enableHiding: true,
     cell: ({ getValue }) => (
       <span className="font-bold text-blue-600 flex items-center gap-2">
         <svg width="16" height="16" fill="currentColor">
@@ -24,8 +25,8 @@ const columns: ColumnDef<Product, unknown>[] = [
       </span>
     ),
   },
-  { accessorKey: "price", header: "Price" },
-  { accessorKey: "brand", header: "Brand" },
+  { accessorKey: "price", header: "Price", enableHiding: true },
+  { accessorKey: "brand", header: "Brand", enableHiding: true },
 ];
 
 const viewIcon = (
@@ -84,6 +85,13 @@ export const App = () => {
         dataSource={"https://dummyjson.com/products"}
         columns={columns}
         actionsHorizontal={false}
+        enableColumnVisibility={true}
+        initialColumnVisibility={{
+          id: true,
+          title: true,
+          price: true,
+          brand: false, // This column will be hidden initially
+        }}
         actions={[
           {
             label: "View",

@@ -27,6 +27,8 @@ interface DataTableProps<T extends object> {
   initialPageSize?: number;
   actions?: Action<T>[];
   actionsHorizontal?: boolean;
+  enableColumnVisibility?: boolean;
+  initialColumnVisibility?: Record<string, boolean>;
 }
 
 interface ApiResponse<T> {
@@ -42,10 +44,13 @@ export function DataTable<T extends object>({
   initialPageSize = 10,
   actions,
   actionsHorizontal = false,
+  enableColumnVisibility = true,
+  initialColumnVisibility = {},
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [columnSizing, setColumnSizing] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
 
   // For client-side data
   const isClientData = Array.isArray(dataSource);
@@ -129,6 +134,7 @@ export function DataTable<T extends object>({
     state: {
       pagination: { pageIndex, pageSize },
       columnSizing,
+      columnVisibility: enableColumnVisibility ? columnVisibility : {},
     },
     manualPagination: true,
     onPaginationChange: updater => {
@@ -141,6 +147,7 @@ export function DataTable<T extends object>({
         setPageSize(updater.pageSize);
       }
     },
+    onColumnVisibilityChange: enableColumnVisibility ? setColumnVisibility : undefined,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     enableColumnResizing: true,
@@ -157,7 +164,7 @@ export function DataTable<T extends object>({
           <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
             <div className="max-h-96 min-h-[20rem] overflow-y-auto w-full">
               <table className="min-w-full divide-y divide-gray-200">
-                <DataTableHeader table={table} actionsHorizontal={actionsHorizontal} />
+                <DataTableHeader table={table} actionsHorizontal={actionsHorizontal} enableColumnVisibility={enableColumnVisibility} />
                 <tbody className="bg-white divide-y divide-gray-100">
                   {loading ? (
                     Array.from({ length: 5 }).map((_, rowIdx) => (

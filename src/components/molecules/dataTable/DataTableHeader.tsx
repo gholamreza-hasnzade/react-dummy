@@ -1,14 +1,32 @@
 import type { Table } from "@tanstack/react-table";
+import { ColumnVisibilityToggle } from "./ColumnVisibilityToggle";
 
 export const DataTableHeader = <T extends object>({
   table,
   actionsHorizontal = false,
+  enableColumnVisibility = true,
 }: {
   table: Table<T>;
   actionsHorizontal?: boolean;
+  enableColumnVisibility?: boolean;
 }) => {
   return (
     <thead className="bg-gray-50 sticky top-0 z-10">
+      {/* Column Visibility Controls Row */}
+      {enableColumnVisibility && (
+        <tr>
+          <th colSpan={table.getAllColumns().length + (actionsHorizontal ? 1 : 0)} className="px-6 py-2 bg-gray-50 border-b border-gray-200">
+            <div className="flex justify-between items-center">
+              <div className="text-sm text-gray-600">
+                Showing {table.getVisibleLeafColumns().length} of {table.getAllLeafColumns().length} columns
+              </div>
+              <ColumnVisibilityToggle table={table} />
+            </div>
+          </th>
+        </tr>
+      )}
+      
+      {/* Column Headers Row */}
       {table.getHeaderGroups().map((headerGroup) => (
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header) => (
