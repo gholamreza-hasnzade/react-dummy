@@ -6,7 +6,8 @@ This implementation adds global filtering functionality to the DataTable compone
 
 - **Global Search**: Single search input that searches across all columns
 - **API Integration**: Uses dedicated search endpoints for server-side filtering
-- **Real-time Search**: Search results update as you type
+- **Debounced Search**: Reduces API calls with configurable debounce delay
+- **Real-time Search**: Search results update after debounce delay
 - **Clear Button**: Easy way to clear the search
 - **Responsive Design**: Search input works well with the existing table layout
 - **Search Icon**: Visual indicator for the search functionality
@@ -49,6 +50,7 @@ export const App = () => {
       enableGlobalFilter={true}
       globalFilterPlaceholder="Search products..."
       searchEndpoint="https://dummyjson.com/products/search"
+      debounceMs={500}
     />
   );
 };
@@ -65,6 +67,7 @@ export const App = () => {
   enableGlobalFilter={true}
   globalFilterPlaceholder="Search products..."
   searchEndpoint="https://dummyjson.com/products/search"
+  debounceMs={500}
   initialColumnVisibility={{
     id: true,
     title: true,
@@ -91,6 +94,7 @@ export const App = () => {
 - `enableGlobalFilter?: boolean` - Enable/disable the global filtering feature (default: `true`)
 - `globalFilterPlaceholder?: string` - Placeholder text for the search input (default: "Search all columns...")
 - `searchEndpoint?: string` - Optional search endpoint (e.g., "https://dummyjson.com/products/search")
+- `debounceMs?: number` - Debounce delay in milliseconds (default: 300)
 
 
 ## API Endpoint Requirements
@@ -161,9 +165,10 @@ The component automatically switches between endpoints:
 ### Search Behavior
 
 - **Server-side filtering**: Uses API endpoints for searching
-- **Real-time updates**: Results update as you type
+- **Debounced updates**: Results update after configurable delay (default: 300ms)
 - **Pagination support**: Search results are properly paginated
-- **Query debouncing**: Built-in React Query caching prevents excessive API calls
+- **Query caching**: Built-in React Query caching prevents excessive API calls
+- **Performance optimized**: Reduces API calls during rapid typing
 
 ## UI Features
 
@@ -205,8 +210,10 @@ This feature works with all modern browsers that support:
 
 - **API Caching**: React Query caches search results
 - **Query Key Optimization**: Includes search parameters in query key
+- **Debounced Search**: Reduces API calls during rapid typing
 - **Automatic Refetching**: Refetches when search parameters change
 - **Pagination**: Only loads necessary data
+- **Configurable Delay**: Adjust debounce timing based on your needs
 
 ## Integration with Other Features
 

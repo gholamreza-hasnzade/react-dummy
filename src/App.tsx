@@ -91,6 +91,7 @@ export const App = () => {
         enableGlobalFilter={true}
         globalFilterPlaceholder="Search products..."
         searchEndpoint="https://dummyjson.com/products/search"
+        debounceMs={500}
         initialColumnVisibility={{
           id: true,
           title: true,

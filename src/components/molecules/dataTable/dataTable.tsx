@@ -35,6 +35,7 @@ interface DataTableProps<T extends object> {
   enableGlobalFilter?: boolean;
   globalFilterPlaceholder?: string;
   searchEndpoint?: string;
+  debounceMs?: number;
 }
 
 interface ApiResponse<T> {
@@ -56,6 +57,7 @@ export function DataTable<T extends object>({
   enableGlobalFilter = true,
   globalFilterPlaceholder = "Search all columns...",
   searchEndpoint,
+  debounceMs = 300,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -199,6 +201,7 @@ export function DataTable<T extends object>({
         table={table} 
         enableGlobalFilter={enableGlobalFilter}
         globalFilterPlaceholder={globalFilterPlaceholder}
+        debounceMs={debounceMs}
       />
       <div className="overflow-x-auto w-full">
         <div className="inline-block min-w-full align-middle">

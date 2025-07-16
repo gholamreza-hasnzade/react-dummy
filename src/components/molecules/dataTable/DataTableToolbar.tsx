@@ -6,12 +6,14 @@ interface DataTableToolbarProps<T extends object> {
   table: Table<T>;
   enableGlobalFilter?: boolean;
   globalFilterPlaceholder?: string;
+  debounceMs?: number;
 }
 
 export function DataTableToolbar<T extends object>({
   table,
   enableGlobalFilter = true,
   globalFilterPlaceholder = "Search all columns...",
+  debounceMs = 300,
 }: DataTableToolbarProps<T>) {
   if (!enableGlobalFilter) {
     return null;
@@ -27,6 +29,7 @@ export function DataTableToolbar<T extends object>({
           table={table} 
           placeholder={globalFilterPlaceholder}
           className="w-80"
+          debounceMs={debounceMs}
         />
       </div>
     </div>
