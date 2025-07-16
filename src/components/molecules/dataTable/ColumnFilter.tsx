@@ -17,7 +17,7 @@ export function ColumnFilter<T extends object>({ column }: ColumnFilterProps<T>)
         placeholder={`Filter ${typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}...`}
         className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
-      {columnFilterValue && (
+      {!!columnFilterValue && (
         <button
           onClick={() => column.setFilterValue('')}
           className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
