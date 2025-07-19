@@ -67,6 +67,7 @@ export function DataTable<T extends object>({
   debounceMs = 300,
   getRowId,
   onRowSelectionChange,
+  selectedRowClassName,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -221,16 +222,22 @@ export function DataTable<T extends object>({
   }
 
   const handleRowSelectionChange = (updater: Updater<RowSelectionState>) => {
-    setRowSelection((prev) => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
-      setTimeout(() => {
-        const selectedRows = table.getSelectedRowModel().flatRows.map(r => r.original);
-        if (onRowSelectionChange) {
-          onRowSelectionChange(selectedRows);
-        }
-      }, 0);
-      return next;
-    });
+    const next = typeof updater === "function" ? updater(rowSelection) : updater;
+    setRowSelection(next);
+    
+    // Call the callback with selected rows after state update
+    if (onRowSelectionChange) {
+      // Get the selected row indices
+      const selectedRowIndices = Object.keys(next).filter(key => next[key]);
+      
+      // Map the indices to actual row data
+      const selectedRows = selectedRowIndices.map(index => {
+        const rowIndex = parseInt(index);
+        return data[rowIndex];
+      }).filter(Boolean);
+      
+      onRowSelectionChange(selectedRows);
+    }
   };
 
   const table = useReactTable({
@@ -352,13 +359,19 @@ export function DataTable<T extends object>({
                   </td>
                 </tr>
               ) : (
-                table.getRowModel().rows.map((row, idx) => (
-                  <tr
-                    key={row.id}
-                    className={`hover:bg-blue-50 transition-colors duration-200 ${
-                      idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    }`}
-                  >
+                table.getRowModel().rows.map((row, idx) => {
+                  const isSelected = row.getIsSelected();
+                  return (
+                    <tr
+                      key={row.id}
+                      className={`transition-all duration-200 ${
+                        isSelected 
+                          ? selectedRowClassName || "bg-blue-100 border-l-4 border-blue-500 shadow-sm"
+                          : idx % 2 === 0 
+                            ? "bg-white hover:bg-blue-50" 
+                            : "bg-gray-50 hover:bg-blue-50"
+                      }`}
+                    >
                     {actionsHorizontal ? (
                       <>
                         {row.getVisibleCells().map((cell) => (
@@ -423,7 +436,8 @@ export function DataTable<T extends object>({
                       ))
                     )}
                   </tr>
-                ))
+                );
+                })
               )}
             </tbody>
           </table>

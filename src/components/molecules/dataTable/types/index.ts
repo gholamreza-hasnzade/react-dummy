@@ -22,6 +22,8 @@ export interface DataTableProps<T extends object> {
   debounceMs?: number;
   getRowId?: (originalRow: T, index: number, parent?: unknown) => string;
   onRowSelectionChange?: (selectedRowsOnPage: T[]) => void;
+  onSelectSingleRow?: (selectedRow: T) => void;
+  selectedRowClassName?: string;
 }
 
 export interface ApiResponse<T> {

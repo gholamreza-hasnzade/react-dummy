@@ -202,12 +202,15 @@ export const App = () => {
             onClick: (row) => {
               console.log("Delete", row);
             },
-            icon: deleteIcon,
+            icon: deleteIcon, 
           },
         ]}
-        onRowSelectionChange={(selectedRowsOnPage) => {
-          console.log("Selected rows:", selectedRowsOnPage);
+        onSelectSingleRow={(selectedRow) => {
+          console.log("Single row selected:", selectedRow);
         }}
+       /*   onRowSelectionChange={(selectedRowsOnPage) => {
+          console.log("Selected rows:", selectedRowsOnPage);
+        }} */
       />
     </div>
   );
