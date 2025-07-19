@@ -13,7 +13,6 @@ import {
   getPaginationRowModel,
   getFilteredRowModel,
   flexRender,
-  type ColumnDef,
 } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -400,7 +399,7 @@ export function DataTable<T extends object>({
                           className={
                             cell.column.id === "actions"
                               ? "px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 border-b border-gray-100 text-right"
-                              : "px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 border-b border-gray-100 text-right truncate max-w-full overflow-hidden whitespace-nowrap"
+                              : "px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 border-b border-gray-100 text-right"
                           }
                           style={{
                             width: cell.column.getSize
@@ -412,9 +411,6 @@ export function DataTable<T extends object>({
                             maxWidth: cell.column.getSize
                               ? cell.column.getSize()
                               : cell.column.columnDef.size,
-                           /*  ...(cell.column.id === "actions"
-                              ? { width: 50, minWidth: 50, maxWidth: 50 }
-                              : {}), */
                           }}
                         >
                           <span title={String(cell.getValue?.() ?? "")}>

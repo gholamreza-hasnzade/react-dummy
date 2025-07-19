@@ -1,4 +1,3 @@
-export { ActionsDropdown } from './ActionsDropdown';
 export { ColumnFilter } from './ColumnFilter';
 export { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
 export { DataTableHeader } from './DataTableHeader';
