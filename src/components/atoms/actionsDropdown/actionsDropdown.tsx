@@ -28,17 +28,18 @@ export function ActionsDropdown<T>({
   }, [open]);
 
   return (
-    <div className=" flex justify-end items-center " ref={ref}>
+    <div className="flex justify-end items-center" ref={ref}>
       <div className="relative">
         <button
-          className="p-2 rounded-full  transition "
+          className="p-1.5 sm:p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => setOpen((o) => !o)}
           type="button"
           aria-label="Actions"
         >
           <svg
-            width="20"
-            height="20"
+            width="16"
+            height="16"
+            className="sm:w-5 sm:h-5 text-gray-600"
             fill="none"
             viewBox="0 0 20 20"
             stroke="currentColor"
@@ -49,9 +50,9 @@ export function ActionsDropdown<T>({
           </svg>
         </button>
         {open && (
-          <div className=" absolute top-5 -right-16 translate-x-1/2 mt-2 w-36 bg-white border rounded shadow-lg z-30">
+          <div className="absolute top-6 -right-16 translate-x-1/2 mt-1 w-36 sm:w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-30">
             <button
-              className=" sr-only"
+              className="sr-only"
               onClick={() => setOpen(false)}
               aria-label="Close actions menu"
               tabIndex={0}
@@ -61,15 +62,17 @@ export function ActionsDropdown<T>({
             {actions.map((action, idx) => (
               <button
                 key={action.label + idx}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 text-right"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 text-right transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
                 onClick={() => {
                   action.onClick(row);
                   setOpen(false);
                 }}
                 type="button"
               >
-                {action.icon && <span>{action.icon}</span>}
-                {action.label}
+                {action.icon && (
+                  <span className="flex-shrink-0">{action.icon}</span>
+                )}
+                <span className="truncate text-gray-700">{action.label}</span>
               </button>
             ))}
           </div>

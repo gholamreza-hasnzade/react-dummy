@@ -53,14 +53,14 @@ export function GlobalFilter<T extends object>({
   }, [globalFilterValue]);
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-3 ${className}`}>
       <div className="relative flex-1">
         <input
           type="text"
           value={inputValue}
           onChange={handleInputChange}
           placeholder={placeholder}
-          className="w-full px-4 py-2 pl-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2.5 pl-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 placeholder-gray-400"
         />
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@ export function GlobalFilter<T extends object>({
       {inputValue && (
         <button
           onClick={handleClear}
-          className="px-3 py-2 text-sm text-gray-400 hover:text-gray-600 focus:outline-none border border-gray-300 rounded-md hover:bg-gray-50"
+          className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 focus:outline-none border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
           type="button"
         >
           Clear

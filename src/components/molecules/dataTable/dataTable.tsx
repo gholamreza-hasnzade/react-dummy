@@ -15,43 +15,19 @@ import {
   flexRender,
   type ColumnDef,
 } from "@tanstack/react-table";
-import { ActionsDropdown } from "./ActionsDropdown";
-
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { DataTablePagination } from "./DataTablePagination";
-import { DataTableHeader } from "./DataTableHeader";
-import { DataTableToolbar } from "./DataTableToolbar";
 
-interface Action<T> {
-  label: string;
-  onClick: (row: T) => void;
-  icon?: React.ReactNode;
-}
+// Import components from new structure
+import { 
+  DataTablePagination, 
+  DataTableHeader, 
+  DataTableToolbar 
+} from "./components";
 
-interface DataTableProps<T extends object> {
-  dataSource: string | T[];
-  columns: ColumnDef<T, unknown>[];
-  pageSizeOptions?: number[];
-  initialPageSize?: number;
-  actions?: Action<T>[];
-  actionsHorizontal?: boolean;
-  enableColumnVisibility?: boolean;
-  initialColumnVisibility?: Record<string, boolean>;
-  enableColumnFiltering?: boolean;
-  enableGlobalFilter?: boolean;
-  globalFilterPlaceholder?: string;
-  searchEndpoint?: string;
-  debounceMs?: number;
-  getRowId?: (originalRow: T, index: number, parent?: unknown) => string;
-  onRowSelectionChange?: (selectedRowsOnPage: T[]) => void;
-}
-
-interface ApiResponse<T> {
-  data?: T[];
-  products?: T[];
-  total: number;
-}
+// Import types
+import type { Action, DataTableProps, ApiResponse } from "./types";
+import { ActionsDropdown } from "@/components/atoms";
 
 function IndeterminateCheckbox({
   indeterminate,
@@ -70,7 +46,7 @@ function IndeterminateCheckbox({
     <input
       type="checkbox"
       ref={ref}
-      className={className + " cursor-pointer"}
+      className={className + " cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500"}
       {...rest}
     />
   );
@@ -233,12 +209,12 @@ export function DataTable<T extends object>({
         {actions.map((action, idx) => (
           <button
             key={action.label + idx}
-            className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-sm flex items-center gap-1"
+            className="px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-sm flex items-center gap-1.5 transition-colors duration-200 font-medium text-gray-700"
             onClick={() => action.onClick(row)}
             type="button"
           >
-            {action.icon && <span>{action.icon}</span>}
-            {action.label}
+            {action.icon && <span className="flex-shrink-0">{action.icon}</span>}
+            <span className="truncate">{action.label}</span>
           </button>
         ))}
       </div>
@@ -306,151 +282,176 @@ export function DataTable<T extends object>({
   const computedPageCount = table.getPageCount();
 
   return (
-    <div className="flex flex-col w-full max-w-full">
+    <div className="flex flex-col w-full h-full bg-white rounded-lg shadow-sm border border-gray-200">
       <DataTableToolbar
         table={table}
         enableGlobalFilter={enableGlobalFilter}
         globalFilterPlaceholder={globalFilterPlaceholder}
         debounceMs={debounceMs}
       />
-      <div className="overflow-x-auto w-full">
-        <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
-            <div className="max-h-96 min-h-[20rem] overflow-y-auto w-full">
-              <table className="min-w-full divide-y divide-gray-200">
-                <DataTableHeader
-                  table={table}
-                  actionsHorizontal={actionsHorizontal}
-                  enableColumnVisibility={enableColumnVisibility}
-                  enableColumnFiltering={enableColumnFiltering}
-                />
-                <tbody className="bg-white divide-y divide-gray-100">
-                  {loading ? (
-                    Array.from({ length: 5 }).map((_, rowIdx) => (
-                      <tr key={`skeleton-row-${rowIdx}`}>
-                        {Array.from({
-                          length: Array.isArray(columnsWithSelection)
-                            ? columnsWithSelection.length
-                            : 1,
-                        }).map((_, colIdx) => (
+      <div className="flex-1 w-full overflow-hidden">
+        <div className="w-full h-full overflow-x-auto table-container">
+          <table className="w-full min-w-full divide-y divide-gray-200">
+            <DataTableHeader
+              table={table}
+              actionsHorizontal={actionsHorizontal}
+              enableColumnVisibility={enableColumnVisibility}
+              enableColumnFiltering={enableColumnFiltering}
+            />
+            <tbody className="bg-white divide-y divide-gray-100">
+              {loading ? (
+                Array.from({ length: 5 }).map((_, rowIdx) => (
+                  <tr key={`skeleton-row-${rowIdx}`}>
+                    {Array.from({
+                      length: Array.isArray(columnsWithSelection)
+                        ? columnsWithSelection.length
+                        : 1,
+                    }).map((_, colIdx) => (
+                      <td
+                        key={`skeleton-cell-${rowIdx}-${colIdx}`}
+                        className="px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm border-b border-gray-100 text-right"
+                      >
+                        <div className="h-4 w-full bg-gray-200 rounded animate-pulse" />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : errorMsg ? (
+                <tr>
+                  <td
+                    colSpan={
+                      Array.isArray(columnsWithSelection)
+                        ? columnsWithSelection.length
+                        : 1
+                    }
+                    className="text-center text-red-500 py-12 px-4 sm:px-6"
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <span className="font-medium">{errorMsg}</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : data.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={
+                      Array.isArray(columnsWithSelection)
+                        ? columnsWithSelection.length
+                        : 1
+                    }
+                    className="text-center py-12 px-4 sm:px-6"
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span className="text-gray-500 font-medium">No data available</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row, idx) => (
+                  <tr
+                    key={row.id}
+                    className={`hover:bg-blue-50 transition-colors duration-200 ${
+                      idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    }`}
+                  >
+                    {actionsHorizontal ? (
+                      <>
+                        {row.getVisibleCells().map((cell) => (
                           <td
-                            key={`skeleton-cell-${rowIdx}-${colIdx}`}
-                            className="px-6 py-6 whitespace-nowrap text-sm border-b border-gray-100 text-right font-medium"
+                            key={cell.id}
+                            className="px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right"
+                            style={{
+                              width: cell.column.getSize
+                                ? cell.column.getSize()
+                                : cell.column.columnDef.size,
+                              minWidth: cell.column.getSize
+                                ? cell.column.getSize()
+                                : cell.column.columnDef.size || 150,
+                              maxWidth: cell.column.getSize
+                                ? cell.column.getSize()
+                                : cell.column.columnDef.size,
+                            }}
                           >
-                            <div className="h-4 w-full bg-gray-200 rounded animate-pulse mx-auto" />
+                            <span title={String(cell.getValue?.() ?? "")}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </span>
                           </td>
                         ))}
-                      </tr>
-                    ))
-                  ) : errorMsg ? (
-                    <tr>
-                      <td
-                        colSpan={
-                          Array.isArray(columnsWithSelection)
-                            ? columnsWithSelection.length
-                            : 1
-                        }
-                        className="text-center text-red-500 py-8"
-                      >
-                        {errorMsg}
-                      </td>
-                    </tr>
-                  ) : data.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={
-                          Array.isArray(columnsWithSelection)
-                            ? columnsWithSelection.length
-                            : 1
-                        }
-                        className="text-center py-8 text-gray-400"
-                      >
-                        No data
-                      </td>
-                    </tr>
-                  ) : (
-                    table.getRowModel().rows.map((row, idx) => (
-                      <tr
-                        key={row.id}
-                        className={`hover:bg-blue-50 transition-colors ${
-                          idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                        }`}
-                      >
-                        {actionsHorizontal ? (
-                          <>
-                            {row.getVisibleCells().map((cell) => (
-                              <td
-                                key={cell.id}
-                                className="px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium"
-                              >
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </td>
-                            ))}
-                            <td className="px-6 py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right font-medium">
-                              <ActionsRow
-                                actions={actions ?? []}
-                                row={row.original}
-                              />
-                            </td>
-                          </>
-                        ) : (
-                          row.getVisibleCells().map((cell) => (
-                            <td
-                              key={cell.id}
-                              className={
-                                cell.column.id === "actions"
-                                  ? "px-6 py-6 text-sm text-gray-900 border-b border-gray-100 text-right font-medium"
-                                  : "px-6 py-6 text-sm text-gray-900 border-b border-gray-100 text-right font-medium truncate max-w-full overflow-hidden whitespace-nowrap"
-                              }
-                              style={{
-                                width: cell.column.getSize
-                                  ? cell.column.getSize()
-                                  : cell.column.columnDef.size,
-                                minWidth: cell.column.getSize
-                                  ? cell.column.getSize()
-                                  : cell.column.columnDef.size,
-                                maxWidth: cell.column.getSize
-                                  ? cell.column.getSize()
-                                  : cell.column.columnDef.size,
-                            /*     ...(cell.column.id === "actions"
-                                  ? { width: 50, minWidth: 50, maxWidth: 50 }
-                                  : {}), */
-                              }}
-                            >
-                              <span title={String(cell.getValue?.() ?? "")}>
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </span>
-                            </td>
-                          ))
-                        )}
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                        <td className="px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right">
+                          <ActionsRow
+                            actions={actions ?? []}
+                            row={row.original}
+                          />
+                        </td>
+                      </>
+                    ) : (
+                      row.getVisibleCells().map((cell) => (
+                        <td
+                          key={cell.id}
+                          className={
+                            cell.column.id === "actions"
+                              ? "px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 border-b border-gray-100 text-right"
+                              : "px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 border-b border-gray-100 text-right truncate max-w-full overflow-hidden whitespace-nowrap"
+                          }
+                          style={{
+                            width: cell.column.getSize
+                              ? cell.column.getSize()
+                              : cell.column.columnDef.size,
+                            minWidth: cell.column.getSize
+                              ? cell.column.getSize()
+                              : cell.column.columnDef.size || 150,
+                            maxWidth: cell.column.getSize
+                              ? cell.column.getSize()
+                              : cell.column.columnDef.size,
+                           /*  ...(cell.column.id === "actions"
+                              ? { width: 50, minWidth: 50, maxWidth: 50 }
+                              : {}), */
+                          }}
+                        >
+                          <span title={String(cell.getValue?.() ?? "")}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </span>
+                        </td>
+                      ))
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
-      <div className="mt-2 text-sm text-gray-600">
-        {Object.keys(rowSelection).length} Total Rows Selected
+      {Object.keys(rowSelection).length > 0 && (
+        <div className="px-4 sm:px-6 py-3 bg-blue-50 border-t border-blue-200">
+          <div className="text-sm text-blue-700 font-medium">
+            {Object.keys(rowSelection).length} row(s) selected
+          </div>
+        </div>
+      )}
+      <div className="px-4 sm:px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <DataTablePagination
+          table={table}
+          pageIndex={pageIndex}
+          setPageIndex={setPageIndex}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          pageSizeOptions={pageSizeOptions}
+          loading={loading}
+          computedPageCount={computedPageCount}
+        />
       </div>
-      <DataTablePagination
-        table={table}
-        pageIndex={pageIndex}
-        setPageIndex={setPageIndex}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        pageSizeOptions={pageSizeOptions}
-        loading={loading}
-        computedPageCount={computedPageCount}
-      />
     </div>
   );
 }

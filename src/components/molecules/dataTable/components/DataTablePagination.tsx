@@ -23,47 +23,47 @@ export function DataTablePagination<T>({
   computedPageCount,
 }: DataTablePaginationProps<T>) {
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2 w-full">
+    <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4 w-full px-4 sm:px-0">
       <div className="flex items-center gap-2">
         <button
-          className="px-2 py-1 border rounded bg-white hover:bg-gray-100 transition disabled:opacity-50"
+          className="px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => table.setPageIndex(0)}
           disabled={pageIndex === 0 || loading}
         >
           {'<<'}
         </button>
         <button
-          className="px-2 py-1 border rounded bg-white hover:bg-gray-100 transition disabled:opacity-50"
+          className="px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage() || loading}
         >
           {'<'}
         </button>
         <button
-          className="px-2 py-1 border rounded bg-white hover:bg-gray-100 transition disabled:opacity-50"
+          className="px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage() || loading}
         >
           {'>'}
         </button>
         <button
-          className="px-2 py-1 border rounded bg-white hover:bg-gray-100 transition disabled:opacity-50"
+          className="px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => table.setPageIndex(computedPageCount - 1)}
           disabled={pageIndex >= computedPageCount - 1 || loading}
         >
           {'>>'}
         </button>
-        <span className="ml-2 text-sm text-gray-700">
+        <span className="ml-4 text-sm text-gray-700">
           Page{' '}
-          <strong>
+          <strong className="text-gray-900">
             {pageIndex + 1} of {computedPageCount}
           </strong>
         </span>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <span className="text-sm text-gray-700">Rows per page:</span>
         <select
-          className="border rounded px-2 py-1 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          className="border border-gray-300 rounded-md px-3 py-2 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors duration-200"
           value={pageSize}
           onChange={e => {
             setPageSize(Number(e.target.value));

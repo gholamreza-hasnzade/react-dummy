@@ -39,8 +39,8 @@ export const DataTableHeader = <T extends object>({
     <thead className="bg-gray-50 sticky top-0 z-10">
       {enableColumnVisibility && (
         <tr>
-          <th colSpan={table.getAllColumns().length + (actionsHorizontal ? 1 : 0)} className="px-6 py-2 bg-gray-50 border-b border-gray-200">
-            <div className="flex justify-between items-center">
+          <th colSpan={table.getAllColumns().length + (actionsHorizontal ? 1 : 0)} className="px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div className="text-sm text-gray-600">
                 Showing {table.getVisibleLeafColumns().length} of {table.getAllLeafColumns().length} columns
               </div>
@@ -56,7 +56,7 @@ export const DataTableHeader = <T extends object>({
             <th
               key={header.id}
               className={
-                `px-6 py-3 text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200 ` +
+                `px-4 sm:px-6 py-3 text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200 ` +
                 (header.column.id === "actions"
                   ? "text-left sticky left-0 z-20"
                   : "text-right")
@@ -67,7 +67,7 @@ export const DataTableHeader = <T extends object>({
                   : header.column.columnDef.size,
                 minWidth: header.getSize
                   ? header.getSize()
-                  : header.column.columnDef.size,
+                  : header.column.columnDef.size || 150,
                 maxWidth: header.getSize
                   ? header.getSize()
                   : header.column.columnDef.size,
@@ -81,7 +81,7 @@ export const DataTableHeader = <T extends object>({
                   <button
                     type="button"
                     onClick={header.column.getToggleSortingHandler()}
-                    className="group inline-flex items-center select-none focus:outline-none"
+                    className="group inline-flex items-center select-none focus:outline-none hover:text-blue-600 transition-colors duration-200"
                     style={{ background: "none", border: "none", padding: 0, margin: 0, cursor: "pointer" }}
                     tabIndex={0}
                   >
@@ -99,7 +99,7 @@ export const DataTableHeader = <T extends object>({
             </th>
           ))}
           {actionsHorizontal && (
-            <th className="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200">
+            <th className="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider bg-gray-50 border-b border-gray-200">
               Actions
             </th>
           )}
@@ -109,21 +109,21 @@ export const DataTableHeader = <T extends object>({
       {enableColumnFiltering && (
         <tr>
           {table.getVisibleLeafColumns().map((column) => (
-            <th key={column.id} className="px-6 py-2 bg-gray-50 border-b border-gray-200">
+            <th key={column.id} className="px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
               {column.getCanFilter() ? (
                 <ColumnFilter column={column} />
               ) : (
-                <div className="h-8" /> 
+                <div className="h-10" /> 
               )}
             </th>
           ))}
           {actionsHorizontal && (
-            <th className="px-6 py-2 bg-gray-50 border-b border-gray-200">
-              <div className="h-8" /> 
+            <th className="px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
+              <div className="h-10" /> 
             </th>
           )}
         </tr>
       )}
     </thead>
   );
-};
+}; 

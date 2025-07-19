@@ -29,7 +29,7 @@ export function ColumnVisibilityToggle<T extends object>({ table }: ColumnVisibi
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center gap-2"
+        className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 flex items-center gap-2 transition-colors duration-200"
         type="button"
       >
         <svg
@@ -46,18 +46,18 @@ export function ColumnVisibilityToggle<T extends object>({ table }: ColumnVisibi
             d="M4 6h16M4 12h16M4 18h16"
           />
         </svg>
-        Columns
+        <span className="hidden sm:inline">Columns</span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
           <div className="py-1">
             {table.getAllLeafColumns()
               .filter(column => column.getCanHide())
               .map(column => (
                 <label
                   key={column.id}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
                 >
                   <input
                     type="checkbox"
@@ -65,9 +65,11 @@ export function ColumnVisibilityToggle<T extends object>({ table }: ColumnVisibi
                     onChange={column.getToggleVisibilityHandler()}
                     className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  {typeof column.columnDef.header === 'string' 
-                    ? column.columnDef.header 
-                    : column.id}
+                  <span className="truncate">
+                    {typeof column.columnDef.header === 'string' 
+                      ? column.columnDef.header 
+                      : column.id}
+                  </span>
                 </label>
               ))}
           </div>

@@ -1,4 +1,4 @@
-import { DataTable } from "./components/molecules/dataTable/dataTable";
+import { DataTable } from "./components/molecules/dataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 interface Product {
@@ -6,26 +6,30 @@ interface Product {
   title: string;
   price: number;
   brand: string;
+  description: string;
+  minimumOrderQuantity: number;
+  stock: number;
+  sku: string;
 }
 
 const columns: ColumnDef<Product, unknown>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    size: 60,
+    size: 80,
     enableHiding: true,
-    enableColumnFilter: false,
-    enableSorting: false,
+    enableColumnFilter: true,
+    enableSorting: true,
   },
   {
-    size: 540,
+    size: 300,
     accessorKey: "title",
     header: "Title",
     enableHiding: true,
-    enableColumnFilter: false,
-    enableSorting: false,
+    enableColumnFilter: true,
+    enableSorting: true,
     cell: ({ getValue }) => (
-      <span className="font-bold text-blue-600 flex items-center gap-2">
+      <span className="font-semibold text-blue-600 flex items-center gap-2">
         <svg width="16" height="16" fill="currentColor">
           <circle cx="8" cy="8" r="8" />
         </svg>
@@ -34,50 +38,74 @@ const columns: ColumnDef<Product, unknown>[] = [
     ),
   },
   {
-    size: 840,
+    size: 120,
     accessorKey: "price",
     header: "Price",
     enableHiding: true,
-    enableColumnFilter: false,
-    enableSorting: false,
+    enableColumnFilter: true,
+    enableSorting: true,
+    cell: ({ getValue }) => (
+      <span className="font-medium text-green-600">
+        ${String(getValue())}
+      </span>
+    ),
   },
   {
+    size: 150,
     accessorKey: "brand",
     header: "Brand",
     enableHiding: true,
-    enableColumnFilter: false,
-    enableSorting: false,
+    enableColumnFilter: true,
+    enableSorting: true,
   },
   {
+    size: 250,
     accessorKey: "description",
-    header: "description",
+    header: "Description",
     enableHiding: true,
-    enableColumnFilter: false,
+    enableColumnFilter: true,
     enableSorting: false,
+    cell: ({ getValue }) => (
+      <span className="text-gray-600 line-clamp-2">
+        {String(getValue())}
+      </span>
+    ),
   },
   {
+    size: 180,
     accessorKey: "minimumOrderQuantity",
-    header: "minimumOrderQuantity",
+    header: "Min Order Qty",
     enableHiding: true,
-    enableColumnFilter: false,
-    enableSorting: false,
-    size: 400,
+    enableColumnFilter: true,
+    enableSorting: true,
   },
   {
+    size: 120,
     accessorKey: "stock",
-    header: "stock",
+    header: "Stock",
     enableHiding: true,
-    enableColumnFilter: false,
-    enableSorting: false,
-    size: 300,
+    enableColumnFilter: true,
+    enableSorting: true,
+    cell: ({ getValue }) => {
+      const stock = Number(getValue());
+      return (
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+          stock > 50 ? 'bg-green-100 text-green-800' :
+          stock > 10 ? 'bg-yellow-100 text-yellow-800' :
+          'bg-red-100 text-red-800'
+        }`}>
+          {stock}
+        </span>
+      );
+    },
   },
   {
+    size: 120,
     accessorKey: "sku",
-    header: "sku",
+    header: "SKU",
     enableHiding: true,
-    enableColumnFilter: false,
-    enableSorting: false,
-    size: 100,
+    enableColumnFilter: true,
+    enableSorting: true,
   },
 ];
 
@@ -132,14 +160,14 @@ const deleteIcon = (
 
 export const App = () => {
   return (
-    <div className="p-8">
+    <div className="w-full h-screen p-4 bg-gray-50">
       <DataTable<Product>
         dataSource={"https://dummyjson.com/products"}
         columns={columns}
         actionsHorizontal={false}
-        enableColumnVisibility={false}
-        enableColumnFiltering={false}
-        enableGlobalFilter={false}
+        enableColumnVisibility={true}
+        enableColumnFiltering={true}
+        enableGlobalFilter={true}
         globalFilterPlaceholder="Search products..."
         searchEndpoint="https://dummyjson.com/products/search"
         debounceMs={500}
@@ -148,6 +176,10 @@ export const App = () => {
           title: true,
           price: true,
           brand: true,
+          description: true,
+          minimumOrderQuantity: true,
+          stock: true,
+          sku: true,
         }}
         getRowId={(row) => String(row.id)}
         actions={[
@@ -173,9 +205,9 @@ export const App = () => {
             icon: deleteIcon,
           },
         ]}
-        /*  onRowSelectionChange={(selectedRowsOnPage) => {
-          console.log(selectedRowsOnPage);
-        }} */
+        onRowSelectionChange={(selectedRowsOnPage) => {
+          console.log("Selected rows:", selectedRowsOnPage);
+        }}
       />
     </div>
   );
