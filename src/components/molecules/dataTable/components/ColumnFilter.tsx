@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Column } from '@tanstack/react-table';
 
 interface ColumnFilterProps<T extends object> {

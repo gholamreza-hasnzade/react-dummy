@@ -31,6 +31,7 @@ type InputProps = {
   | "readOnly"
   | "placeholder"
   | "className"
+  | "size"
 >;
 
 export const Input = ({

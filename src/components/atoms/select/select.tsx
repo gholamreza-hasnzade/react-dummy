@@ -16,7 +16,7 @@ type Option = {
 
 type SelectProps = {
   apiUrl?: string; 
-  titleKey: string | string[]; // changed here
+  titleKey: string | string[];
   valueKey: string;
   variant?: "contained" | "outlined" | "text";
   color?: ColorKey;
@@ -458,7 +458,7 @@ export const Select: React.FC<SelectProps> = ({
             )}
             {data?.map((item: Option) => {
               const itemValue = String(item[valueKey]);
-              const itemTitle = getTitleFromItem(item); // changed here
+              const itemTitle = getTitleFromItem(item);
               const isSelected = selectedValues.includes(itemValue);
               return (
                 <div

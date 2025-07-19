@@ -17,14 +17,12 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-// Import components from new structure
 import { 
   DataTablePagination, 
   DataTableHeader, 
   DataTableToolbar 
 } from "./components";
 
-// Import types
 import type { Action, DataTableProps, ApiResponse } from "./types";
 import { ActionsDropdown } from "@/components/atoms";
 
@@ -69,6 +67,7 @@ export function DataTable<T extends object>({
   onRowSelectionChange,
   onSelectSingleRow,
   selectedRowClassName,
+  getRowClassName,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -231,12 +230,9 @@ export function DataTable<T extends object>({
     const next = typeof updater === "function" ? updater(rowSelection) : updater;
     setRowSelection(next);
     
-    // Handle multiple row selection
     if (onRowSelectionChange) {
-      // Get the selected row indices
       const selectedRowIndices = Object.keys(next).filter(key => next[key]);
       
-      // Map the indices to actual row data
       const selectedRows = selectedRowIndices.map(index => {
         const rowIndex = parseInt(index);
         return data[rowIndex];
@@ -368,15 +364,16 @@ export function DataTable<T extends object>({
               ) : (
                 table.getRowModel().rows.map((row, idx) => {
                   const isSelected = row.getIsSelected();
+                  const customRowClass = getRowClassName ? getRowClassName(row.original, idx) : "";
                   return (
                     <tr
                       key={row.id}
                       className={`transition-all duration-200 ${
                         isSelected 
                           ? selectedRowClassName || "bg-blue-100 border-l-4 border-blue-500 shadow-sm"
-                          : idx % 2 === 0 
+                          : customRowClass || (idx % 2 === 0 
                             ? "bg-white hover:bg-blue-50" 
-                            : "bg-gray-50 hover:bg-blue-50"
+                            : "bg-gray-50 hover:bg-blue-50")
                       } ${onSelectSingleRow ? "cursor-pointer" : ""}`}
                       onClick={onSelectSingleRow ? () => {
                         const newSelection = isSelected ? {} : { [row.id]: true };

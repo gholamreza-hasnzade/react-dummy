@@ -24,6 +24,7 @@ export interface DataTableProps<T extends object> {
   onRowSelectionChange?: (selectedRowsOnPage: T[]) => void;
   onSelectSingleRow?: (selectedRow: T) => void;
   selectedRowClassName?: string;
+  getRowClassName?: (row: T, index: number) => string;
 }
 
 export interface ApiResponse<T> {

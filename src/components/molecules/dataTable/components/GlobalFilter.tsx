@@ -17,7 +17,6 @@ export function GlobalFilter<T extends object>({
   const globalFilterValue = table.getState().globalFilter;
   const [inputValue, setInputValue] = React.useState(globalFilterValue as string);
 
-  // Debounced function to update the table's global filter
   const debouncedSetGlobalFilter = useCallback(
     React.useMemo(
       () => {
@@ -34,20 +33,17 @@ export function GlobalFilter<T extends object>({
     [table, debounceMs]
   );
 
-  // Handle input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setInputValue(value);
     debouncedSetGlobalFilter(value);
   };
 
-  // Handle clear button
   const handleClear = () => {
     setInputValue('');
     table.setGlobalFilter('');
   };
 
-  // Sync input value with table state when it changes externally
   React.useEffect(() => {
     setInputValue(globalFilterValue as string);
   }, [globalFilterValue]);

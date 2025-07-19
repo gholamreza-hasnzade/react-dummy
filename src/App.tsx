@@ -171,6 +171,7 @@ export const App = () => {
         globalFilterPlaceholder="Search products..."
         searchEndpoint="https://dummyjson.com/products/search"
         debounceMs={500}
+        
         initialColumnVisibility={{
           id: true,
           title: true,
@@ -207,6 +208,15 @@ export const App = () => {
         ]}
         onSelectSingleRow={(selectedRow) => {
           console.log("Single row selected:", selectedRow);
+        }}
+        getRowClassName={(row) => {
+          if (row.id === 5) return "bg-green-100 hover:bg-green-200";
+          if (row.id % 2 === 0) return "bg-blue-50 hover:bg-blue-100";
+          if (row.stock < 10) return "bg-red-50 hover:bg-red-100";
+          if (row.stock < 50) return "bg-yellow-50 hover:bg-yellow-100";
+          if (row.price > 1000) return "bg-purple-50 hover:bg-purple-100";
+        
+          return ""; 
         }}
         /*  onRowSelectionChange={(selectedRowsOnPage) => {
           console.log("Selected rows:", selectedRowsOnPage);
