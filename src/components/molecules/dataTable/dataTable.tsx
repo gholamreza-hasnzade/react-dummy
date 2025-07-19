@@ -67,6 +67,7 @@ export function DataTable<T extends object>({
   debounceMs = 300,
   getRowId,
   onRowSelectionChange,
+  onSelectSingleRow,
   selectedRowClassName,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
@@ -170,13 +171,18 @@ export function DataTable<T extends object>({
   const selectionColumn = React.useMemo(
     () => ({
       id: "select",
-      header: ({ table }: HeaderContext<T, unknown>) => (
-        <IndeterminateCheckbox
-          checked={table.getIsAllRowsSelected()}
-          indeterminate={table.getIsSomeRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-        />
-      ),
+      header: ({ table }: HeaderContext<T, unknown>) => {
+        if (onSelectSingleRow) {
+          return <span className="text-gray-400 text-xs">Select</span>;
+        }
+        return (
+          <IndeterminateCheckbox
+            checked={table.getIsAllRowsSelected()}
+            indeterminate={table.getIsSomeRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+          />
+        );
+      },
       cell: ({ row }: CellContext<T, unknown>) => (
         <IndeterminateCheckbox
           checked={row.getIsSelected()}
@@ -190,7 +196,7 @@ export function DataTable<T extends object>({
       size: 32,
       meta: { isSelection: true },
     }),
-    []
+    [onSelectSingleRow]
   );
 
   const columnsWithSelection = React.useMemo(
@@ -225,7 +231,7 @@ export function DataTable<T extends object>({
     const next = typeof updater === "function" ? updater(rowSelection) : updater;
     setRowSelection(next);
     
-    // Call the callback with selected rows after state update
+    // Handle multiple row selection
     if (onRowSelectionChange) {
       // Get the selected row indices
       const selectedRowIndices = Object.keys(next).filter(key => next[key]);
@@ -255,8 +261,9 @@ export function DataTable<T extends object>({
     },
     manualPagination: true,
     manualSorting: true,
-    enableRowSelection: true,
-    onRowSelectionChange: handleRowSelectionChange,
+    enableRowSelection: onRowSelectionChange ? true : false,
+    enableMultiRowSelection: !onSelectSingleRow,
+    onRowSelectionChange: onRowSelectionChange ? handleRowSelectionChange : undefined,
     onPaginationChange: (updater) => {
       if (typeof updater === "function") {
         const next = updater({ pageIndex, pageSize });
@@ -370,7 +377,17 @@ export function DataTable<T extends object>({
                           : idx % 2 === 0 
                             ? "bg-white hover:bg-blue-50" 
                             : "bg-gray-50 hover:bg-blue-50"
-                      }`}
+                      } ${onSelectSingleRow ? "cursor-pointer" : ""}`}
+                      onClick={onSelectSingleRow ? () => {
+                        const newSelection = isSelected ? {} : { [row.id]: true };
+                        setRowSelection(newSelection);
+                        if (!isSelected) {
+                          const selectedRow = data[idx];
+                          if (selectedRow) {
+                            onSelectSingleRow(selectedRow);
+                          }
+                        }
+                      } : undefined}
                     >
                     {actionsHorizontal ? (
                       <>

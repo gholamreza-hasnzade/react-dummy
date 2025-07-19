@@ -40,7 +40,7 @@ export function ExampleWithRowSelection() {
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">DataTable with Row Selection</h2>
+      <h2 className="text-xl font-bold mb-4">DataTable with Multi-Row Selection</h2>
       
       {/* Display selected rows info */}
       {selectedRows.length > 0 && (
@@ -63,6 +63,43 @@ export function ExampleWithRowSelection() {
         columns={columns}
         onRowSelectionChange={handleRowSelectionChange}
         selectedRowClassName="bg-green-100 border-l-4 border-green-500 shadow-md"
+        enableColumnVisibility={true}
+        enableColumnFiltering={true}
+        enableGlobalFilter={true}
+      />
+    </div>
+  );
+}
+
+export function ExampleWithSingleRowSelection() {
+  const [selectedRow, setSelectedRow] = useState<User | null>(null);
+
+  const handleSingleRowSelection = (selectedRow: User) => {
+    console.log('Single row selected:', selectedRow);
+    setSelectedRow(selectedRow);
+  };
+
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-4">DataTable with Single Row Selection</h2>
+      
+      {/* Display selected row info */}
+      {selectedRow && (
+        <div className="mb-4 p-3 bg-purple-50 border border-purple-200 rounded">
+          <h3 className="font-medium text-purple-800 mb-2">
+            Selected Row:
+          </h3>
+          <div className="text-sm text-purple-700">
+            <strong>{selectedRow.name}</strong> - {selectedRow.email} ({selectedRow.role})
+          </div>
+        </div>
+      )}
+
+      <DataTable
+        dataSource={sampleData}
+        columns={columns}
+        onSelectSingleRow={handleSingleRowSelection}
+        selectedRowClassName="bg-purple-100 border-l-4 border-purple-500 shadow-md"
         enableColumnVisibility={true}
         enableColumnFiltering={true}
         enableGlobalFilter={true}

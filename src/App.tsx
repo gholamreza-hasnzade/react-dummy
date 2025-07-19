@@ -208,7 +208,7 @@ export const App = () => {
         onSelectSingleRow={(selectedRow) => {
           console.log("Single row selected:", selectedRow);
         }}
-       /*   onRowSelectionChange={(selectedRowsOnPage) => {
+        /*  onRowSelectionChange={(selectedRowsOnPage) => {
           console.log("Selected rows:", selectedRowsOnPage);
         }} */
       />
