@@ -12,13 +12,13 @@ const columns: ColumnDef<Product, unknown>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    size: 50,
+    size: 60,
     enableHiding: true,
     enableColumnFilter: false,
     enableSorting: false,
   },
   {
-    size: 140,
+    size: 540,
     accessorKey: "title",
     header: "Title",
     enableHiding: true,
@@ -34,6 +34,7 @@ const columns: ColumnDef<Product, unknown>[] = [
     ),
   },
   {
+    size: 840,
     accessorKey: "price",
     header: "Price",
     enableHiding: true,

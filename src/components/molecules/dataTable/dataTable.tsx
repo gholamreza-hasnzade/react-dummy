@@ -44,9 +44,6 @@ interface DataTableProps<T extends object> {
   searchEndpoint?: string;
   debounceMs?: number;
   getRowId?: (originalRow: T, index: number, parent?: unknown) => string;
-  /**
-   * Optional: callback that receives the selected rows from the current page whenever selection changes.
-   */
   onRowSelectionChange?: (selectedRowsOnPage: T[]) => void;
 }
 
@@ -186,7 +183,7 @@ export function DataTable<T extends object>({
         header: "Actions",
         cell: ({ row }: { row: Row<T> }) => (
           <ActionsDropdown actions={actions} row={row.original} />
-        ), // row.original is the data
+        ),
         enableSorting: false,
         enableResizing: false,
         meta: { isAction: true },
@@ -418,9 +415,9 @@ export function DataTable<T extends object>({
                                 maxWidth: cell.column.getSize
                                   ? cell.column.getSize()
                                   : cell.column.columnDef.size,
-                                ...(cell.column.id === "actions"
+                            /*     ...(cell.column.id === "actions"
                                   ? { width: 50, minWidth: 50, maxWidth: 50 }
-                                  : {}),
+                                  : {}), */
                               }}
                             >
                               <span title={String(cell.getValue?.() ?? "")}>
