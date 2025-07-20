@@ -21,10 +21,11 @@ import axios from "axios";
 import { 
   DataTablePagination, 
   DataTableHeader, 
-  DataTableToolbar 
+  DataTableToolbar,
+  EmptyState
 } from "./components";
 
-import type { Action, DataTableProps, ApiResponse } from "./types";
+import type { Action, DataTableProps, ApiResponse, Density } from "./types";
 import { ActionsDropdown } from "@/components/atoms";
 
 function IndeterminateCheckbox({
@@ -74,6 +75,11 @@ export function DataTable<T extends object>({
   onColumnPinningChange,
   enableFilterToggle = true,
   enablePagination = true,
+  enableDensityToggle = false,
+  initialDensity = 'normal',
+  onDensityChange,
+  emptyStateTitle = "No items found",
+  emptyStateDescription = "Try adjusting your search or filters to find what you're looking for.",
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -89,6 +95,7 @@ export function DataTable<T extends object>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [showFilters, setShowFilters] = useState(enableColumnFiltering);
+  const [density, setDensity] = useState<Density>(initialDensity);
 
   const isClientData = Array.isArray(dataSource);
   const clientData = isClientData
@@ -254,6 +261,13 @@ export function DataTable<T extends object>({
     }
   };
 
+  const handleDensityChange = (newDensity: Density) => {
+    setDensity(newDensity);
+    if (onDensityChange) {
+      onDensityChange(newDensity);
+    }
+  };
+
   const table = useReactTable({
     data,
     columns: columnsWithSelection,
@@ -317,6 +331,9 @@ export function DataTable<T extends object>({
         enableGlobalFilter={enableGlobalFilter}
         globalFilterPlaceholder={globalFilterPlaceholder}
         debounceMs={debounceMs}
+        enableDensityToggle={enableDensityToggle}
+        density={density}
+        onDensityChange={handleDensityChange}
       />
       <div className="flex-1 w-full overflow-hidden">
         <div className="w-full h-full overflow-x-auto table-container relative">
@@ -333,22 +350,35 @@ export function DataTable<T extends object>({
             />
             <tbody className="bg-white divide-y divide-gray-100">
               {loading ? (
-                Array.from({ length: 5 }).map((_, rowIdx) => (
-                  <tr key={`skeleton-row-${rowIdx}`}>
-                    {Array.from({
-                      length: Array.isArray(columnsWithSelection)
-                        ? columnsWithSelection.length
-                        : 1,
-                    }).map((_, colIdx) => (
-                      <td
-                        key={`skeleton-cell-${rowIdx}-${colIdx}`}
-                        className="px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm border-b border-gray-100 text-right"
-                      >
+                Array.from({ length: 5 }).map((_, rowIdx) => {
+                  const getDensityClasses = () => {
+                    switch (density) {
+                      case 'compact':
+                        return 'py-2';
+                      case 'comfortable':
+                        return 'py-6';
+                      default:
+                        return 'py-4 sm:py-6';
+                    }
+                  };
+                  
+                                    return (
+                    <tr key={`skeleton-row-${rowIdx}`}>
+                      {Array.from({
+                        length: Array.isArray(columnsWithSelection)
+                          ? columnsWithSelection.length
+                          : 1,
+                      }).map((_, colIdx) => (
+                        <td
+                          key={`skeleton-cell-${rowIdx}-${colIdx}`}
+                          className={`px-4 sm:px-6 ${getDensityClasses()} whitespace-nowrap text-sm border-b border-gray-100 text-right`}
+                        >
                         <div className="h-4 w-full bg-gray-200 rounded animate-pulse" />
                       </td>
                     ))}
                   </tr>
-                ))
+                );
+                })
               ) : errorMsg ? (
                 <tr>
                   <td
@@ -375,20 +405,29 @@ export function DataTable<T extends object>({
                         ? columnsWithSelection.length
                         : 1
                     }
-                    className="text-center py-12 px-4 sm:px-6"
+                    className="text-center py-16 px-4 sm:px-6"
                   >
-                    <div className="flex flex-col items-center gap-2">
-                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <span className="text-gray-500 font-medium">No data available</span>
-                    </div>
+                    <EmptyState
+                      title={emptyStateTitle}
+                      description={emptyStateDescription}
+                    />
                   </td>
                 </tr>
               ) : (
                 table.getRowModel().rows.map((row, idx) => {
                   const isSelected = row.getIsSelected();
                   const customRowClass = getRowClassName ? getRowClassName(row.original, idx) : "";
+                  const getDensityClasses = () => {
+                    switch (density) {
+                      case 'compact':
+                        return 'py-1';
+                      case 'comfortable':
+                        return 'py-6';
+                      default:
+                        return 'py-3';
+                    }
+                  };
+
                   return (
                     <tr
                       key={row.id}
@@ -430,7 +469,7 @@ export function DataTable<T extends object>({
                           return (
                             <td
                               key={cell.id}
-                              className={`px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm text-gray-900 text-right ${
+                              className={`px-4 sm:px-6 ${getDensityClasses()} whitespace-nowrap text-sm text-gray-900 text-right ${
                                 isPinned ? `sticky ${isPinned === 'left' ? 'left-0' : 'right-0'} ${isLastPinned ? (isPinned === 'left' ? 'border-l border-gray-300' : 'border-r border-gray-300') : ''} z-20` : ''
                               }`}
                               style={{
@@ -476,7 +515,7 @@ export function DataTable<T extends object>({
                             </td>
                           );
                         })}
-                        <td className="px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right">
+                        <td className={`px-4 sm:px-6 ${getDensityClasses()} whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right`}>
                           <ActionsRow
                             actions={actions ?? []}
                             row={row.original}
@@ -496,7 +535,7 @@ export function DataTable<T extends object>({
                         return (
                           <td
                             key={cell.id}
-                            className={`px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 text-right ${
+                            className={`px-4 sm:px-6 ${getDensityClasses()} text-sm text-gray-900 text-right ${
                               cell.column.id === "actions"
                                 ? "sticky left-0 z-20 border-l border-gray-300"
                                 : isPinned

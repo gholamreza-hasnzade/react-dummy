@@ -29,14 +29,14 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableHiding: true,
     enableColumnFilter: true,
     enableSorting: true,
-    cell: ({ getValue }) => (
+    /* cell: ({ getValue }) => (
       <span className="font-semibold text-blue-600 flex items-center gap-2">
         <svg width="16" height="16" fill="currentColor">
           <circle cx="8" cy="8" r="8" />
         </svg>
         {String(getValue())}
       </span>
-    ),
+    ), */
   },
   {
     size: 120,
@@ -165,13 +165,20 @@ export const App = () => {
       <DataTable<Product>
         dataSource={"https://dummyjson.com/products"}
         columns={columns}
-        actionsHorizontal={false}
+        actionsHorizontal={true}
         enableColumnVisibility={true}
         enableColumnFiltering={true}
         enableGlobalFilter={true}
         enableColumnPinning={true}
-        enableFilterToggle={false}
+        enableFilterToggle={true}
         enablePagination={true}
+        enableDensityToggle={true}
+        initialDensity="normal"
+        onDensityChange={(density) => {
+          console.log("Density changed:", density);
+        }}
+        emptyStateTitle="No products available"
+        emptyStateDescription="We couldn't find any products matching your criteria. Try adjusting your search terms or filters."
         globalFilterPlaceholder="Search products..."
         searchEndpoint="https://dummyjson.com/products/search"
         debounceMs={500}

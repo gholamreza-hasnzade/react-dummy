@@ -1,5 +1,7 @@
 import type { ColumnDef, Table, Column } from "@tanstack/react-table";
 
+export type Density = 'compact' | 'normal' | 'comfortable';
+
 export interface Action<T> {
   label: string;
   onClick: (row: T) => void;
@@ -30,6 +32,11 @@ export interface DataTableProps<T extends object> {
   onColumnPinningChange?: (pinnedColumns: Record<string, 'left' | 'right' | false>) => void;
   enableFilterToggle?: boolean;
   enablePagination?: boolean;
+  enableDensityToggle?: boolean;
+  initialDensity?: Density;
+  onDensityChange?: (density: Density) => void;
+  emptyStateTitle?: string;
+  emptyStateDescription?: string;
 }
 
 export interface ApiResponse<T> {

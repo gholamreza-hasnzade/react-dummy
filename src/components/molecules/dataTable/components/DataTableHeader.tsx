@@ -72,7 +72,6 @@ export const DataTableHeader = <T extends object>({
             const isPinned = enableColumnPinning && header.column.getIsPinned();
             const pinnedPosition = isPinned ? header.column.getPinnedIndex() : null;
             
-            // Get all pinned columns to determine if this is the last one
             const pinnedColumns = enableColumnPinning 
               ? table.getAllLeafColumns().filter(col => col.getIsPinned() === (isPinned === 'left' ? 'left' : 'right'))
               : [];

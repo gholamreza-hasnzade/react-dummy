@@ -1,5 +1,3 @@
-import React from "react";
-
 interface FilterToggleProps {
   isVisible: boolean;
   onToggle: () => void;
