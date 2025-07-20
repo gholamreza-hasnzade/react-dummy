@@ -20,9 +20,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     header: "Title",
     enableHiding: true,
     enableColumnFilter: true,
-    enableSorting: true,
+    enableSorting: false,
     meta: {
-      enableAdvancedFilter: true,
+      enableAdvancedFilter: false,
     },
     /* cell: ({ getValue }) => (
       <span className="font-semibold text-blue-600 flex items-center gap-2">
@@ -37,9 +37,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     size: 120,
     accessorKey: "price",
     header: "Price",
-    enableHiding: true,
-    enableColumnFilter: true,
-    enableSorting: true,
+    enableHiding: false,
+    enableColumnFilter: false,
+    enableSorting: false,
     meta: {
       enableAdvancedFilter: false,
     },
@@ -51,9 +51,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     size: 150,
     accessorKey: "brand",
     header: "Brand",
-    enableHiding: true,
-    enableColumnFilter: true,
-    enableSorting: true,
+    enableHiding: false,
+    enableColumnFilter: false,
+    enableSorting: false,
     meta: {
       enableAdvancedFilter: false,
     },
@@ -62,8 +62,8 @@ const columns: ColumnDef<Product, unknown>[] = [
     size: 250,
     accessorKey: "description",
     header: "Description",
-    enableHiding: true,
-    enableColumnFilter: true,
+    enableHiding: false,
+    enableColumnFilter: false,
     enableSorting: false,
     cell: ({ getValue }) => (
       <span className="text-gray-600 line-clamp-2">{String(getValue())}</span>
@@ -76,9 +76,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     size: 180,
     accessorKey: "minimumOrderQuantity",
     header: "Min Order Qty",
-    enableHiding: true,
-    enableColumnFilter: true,
-    enableSorting: true,
+    enableHiding: false,
+    enableColumnFilter: false,
+    enableSorting: false,
     meta: {
       enableAdvancedFilter: false,
     },
@@ -87,9 +87,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     size: 120,
     accessorKey: "stock",
     header: "Stock",
-    enableHiding: true,
-    enableColumnFilter: true,
-    enableSorting: true,
+    enableHiding: false,
+    enableColumnFilter: false,
+    enableSorting: false,
     cell: ({ getValue }) => {
       const stock = Number(getValue());
       return (
@@ -114,9 +114,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     size: 120,
     accessorKey: "sku",
     header: "SKU",
-    enableHiding: true,
-    enableColumnFilter: true,
-    enableSorting: true,
+    enableHiding: false,
+    enableColumnFilter: false,
+    enableSorting: false,
     meta: {
       enableAdvancedFilter: false,
     },
@@ -207,7 +207,7 @@ export const App = () => {
           description: true,
           minimumOrderQuantity: true,
           stock: true,
-          sku: true,
+          sku: false,
         }}
         initialColumnPinning={{
           id: "right",
