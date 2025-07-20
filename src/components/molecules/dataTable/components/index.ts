@@ -8,4 +8,5 @@ export { DataTableToolbar } from './DataTableToolbar';
 export { GlobalFilter } from './GlobalFilter';
 export { DensityToggle } from './DensityToggle';
 export { EmptyState } from './EmptyState';
-export { DataTableRow } from './DataTableRow'; 
+export { DataTableRow } from './DataTableRow';
+export { AdvancedFilter } from './AdvancedFilter'; 

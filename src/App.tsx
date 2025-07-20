@@ -13,15 +13,7 @@ interface Product {
 }
 
 const columns: ColumnDef<Product, unknown>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-    size: 80,
-    enableHiding: false,
-    enableColumnFilter: false,
-    enableSorting: false,
-    enablePinning: false,
-  },
+  
   {
     size: 300,
     accessorKey: "title",
@@ -29,6 +21,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableHiding: true,
     enableColumnFilter: true,
     enableSorting: true,
+    meta: {
+      enableAdvancedFilter: true,
+    },
     /* cell: ({ getValue }) => (
       <span className="font-semibold text-blue-600 flex items-center gap-2">
         <svg width="16" height="16" fill="currentColor">
@@ -45,6 +40,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableHiding: true,
     enableColumnFilter: true,
     enableSorting: true,
+    meta: {
+      enableAdvancedFilter: false,
+    },
     cell: ({ getValue }) => (
       <span className="font-medium text-green-600">${String(getValue())}</span>
     ),
@@ -56,6 +54,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableHiding: true,
     enableColumnFilter: true,
     enableSorting: true,
+    meta: {
+      enableAdvancedFilter: false,
+    },
   },
   {
     size: 250,
@@ -67,6 +68,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     cell: ({ getValue }) => (
       <span className="text-gray-600 line-clamp-2">{String(getValue())}</span>
     ),
+    meta: {
+      enableAdvancedFilter: false,
+    },
   },
   {
     size: 180,
@@ -75,6 +79,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableHiding: true,
     enableColumnFilter: true,
     enableSorting: true,
+    meta: {
+      enableAdvancedFilter: false,
+    },
   },
   {
     size: 120,
@@ -99,6 +106,9 @@ const columns: ColumnDef<Product, unknown>[] = [
         </span>
       );
     },
+    meta: {
+      enableAdvancedFilter: false,
+    },
   },
   {
     size: 120,
@@ -107,6 +117,9 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableHiding: true,
     enableColumnFilter: true,
     enableSorting: true,
+    meta: {
+      enableAdvancedFilter: false,
+    },
   },
 ];
 
@@ -165,9 +178,10 @@ export const App = () => {
       <DataTable<Product>
         dataSource={"https://dummyjson.com/products"}
         columns={columns}
-        actionsHorizontal={true}
+        actionsHorizontal={false}
         enableColumnVisibility={true}
         enableColumnFiltering={true}
+        enableAdvancedFiltering={true} 
         enableGlobalFilter={true}
         enableColumnPinning={true}
         enableFilterToggle={true}

@@ -8,6 +8,8 @@ export interface Action<T> {
   icon?: React.ReactNode;
 }
 
+
+
 export interface DataTableProps<T extends object> {
   dataSource: string | T[];
   columns: ColumnDef<T, unknown>[];
@@ -37,6 +39,7 @@ export interface DataTableProps<T extends object> {
   onDensityChange?: (density: Density) => void;
   emptyStateTitle?: string;
   emptyStateDescription?: string;
+  enableAdvancedFiltering?: boolean;
 }
 
 export interface ApiResponse<T> {

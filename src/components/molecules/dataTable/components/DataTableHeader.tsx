@@ -31,6 +31,7 @@ export const DataTableHeader = <T extends object>({
   actionsHorizontal = false,
   enableColumnVisibility = true,
   enableColumnFiltering = true,
+  enableAdvancedFiltering = true,
   enableColumnPinning = false,
   showFilters = true,
   onToggleFilters,
@@ -40,6 +41,7 @@ export const DataTableHeader = <T extends object>({
   actionsHorizontal?: boolean;
   enableColumnVisibility?: boolean;
   enableColumnFiltering?: boolean;
+  enableAdvancedFiltering?: boolean;
   enableColumnPinning?: boolean;
   showFilters?: boolean;
   onToggleFilters?: () => void;
@@ -144,9 +146,9 @@ export const DataTableHeader = <T extends object>({
       {enableColumnFiltering && showFilters && (
         <tr>
           {table.getVisibleLeafColumns().map((column) => (
-            <th key={column.id} className="px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
+            <th key={column.id} className="px-4 sm:px-1 py-3 bg-gray-50 border-b border-gray-200">
               {column.getCanFilter() ? (
-                <ColumnFilter column={column} />
+                <ColumnFilter column={column} enableAdvancedFiltering={enableAdvancedFiltering} />
               ) : (
                 <div className="h-10" /> 
               )}

@@ -24,6 +24,7 @@ import {
   DataTableToolbar,
   EmptyState
 } from "./components";
+import { createAdvancedFilterFn } from "./utils/filterFunctions";
 
 import type { Action, DataTableProps, ApiResponse, Density } from "./types";
 import { ActionsDropdown } from "@/components/atoms";
@@ -80,6 +81,7 @@ export function DataTable<T extends object>({
   onDensityChange,
   emptyStateTitle = "No items found",
   emptyStateDescription = "Try adjusting your search or filters to find what you're looking for.",
+  enableAdvancedFiltering = true,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -307,7 +309,14 @@ export function DataTable<T extends object>({
     onColumnVisibilityChange: enableColumnVisibility
       ? setColumnVisibility
       : undefined,
-    onColumnFiltersChange: enableColumnFiltering ? setColumnFilters : undefined,
+    onColumnFiltersChange: enableColumnFiltering ? (updater) => {
+      console.log('🔄 Column Filters Changed:', {
+        updater,
+        currentFilters: columnFilters,
+        newFilters: typeof updater === 'function' ? updater(columnFilters) : updater
+      });
+      setColumnFilters(updater);
+    } : undefined,
     onGlobalFilterChange: enableGlobalFilter ? setGlobalFilter : undefined,
     onColumnPinningChange: enableColumnPinning ? (updater) => {
       const next = typeof updater === "function" ? updater(columnPinning) : updater;
@@ -325,8 +334,22 @@ export function DataTable<T extends object>({
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     onColumnSizingChange: setColumnSizing,
+    filterFns: {
+      advanced: createAdvancedFilterFn,
+    },
     ...(getRowId ? { getRowId } : {}),
   });
+
+  // Log table state for debugging
+  React.useEffect(() => {
+    console.log('📊 Table State:', {
+      totalRows: data.length,
+      filteredRows: table.getFilteredRowModel().rows.length,
+      columnFilters: table.getState().columnFilters,
+      globalFilter: table.getState().globalFilter,
+      visibleRows: table.getRowModel().rows.length
+    });
+  }, [table.getState().columnFilters, table.getState().globalFilter, data.length]);
 
   const computedPageCount = table.getPageCount();
 
@@ -360,6 +383,7 @@ export function DataTable<T extends object>({
               actionsHorizontal={actionsHorizontal}
               enableColumnVisibility={enableColumnVisibility}
               enableColumnFiltering={enableColumnFiltering}
+              enableAdvancedFiltering={enableAdvancedFiltering}
               enableColumnPinning={enableColumnPinning}
               showFilters={showFilters}
               onToggleFilters={() => setShowFilters(!showFilters)}
