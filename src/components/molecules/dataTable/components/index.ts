@@ -1,6 +1,7 @@
 export { ColumnFilter } from './ColumnFilter';
 export { ColumnVisibilityToggle } from './ColumnVisibilityToggle';
 export { ColumnPinningToggle } from './ColumnPinningToggle';
+export { FilterToggle } from './FilterToggle';
 export { DataTableHeader } from './DataTableHeader';
 export { DataTablePagination } from './DataTablePagination';
 export { DataTableToolbar } from './DataTableToolbar';

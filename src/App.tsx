@@ -46,9 +46,7 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableColumnFilter: true,
     enableSorting: true,
     cell: ({ getValue }) => (
-      <span className="font-medium text-green-600">
-        ${String(getValue())}
-      </span>
+      <span className="font-medium text-green-600">${String(getValue())}</span>
     ),
   },
   {
@@ -67,9 +65,7 @@ const columns: ColumnDef<Product, unknown>[] = [
     enableColumnFilter: true,
     enableSorting: false,
     cell: ({ getValue }) => (
-      <span className="text-gray-600 line-clamp-2">
-        {String(getValue())}
-      </span>
+      <span className="text-gray-600 line-clamp-2">{String(getValue())}</span>
     ),
   },
   {
@@ -90,11 +86,15 @@ const columns: ColumnDef<Product, unknown>[] = [
     cell: ({ getValue }) => {
       const stock = Number(getValue());
       return (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          stock > 50 ? 'bg-green-100 text-green-800' :
-          stock > 10 ? 'bg-yellow-100 text-yellow-800' :
-          'bg-red-100 text-red-800'
-        }`}>
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            stock > 50
+              ? "bg-green-100 text-green-800"
+              : stock > 10
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
           {stock}
         </span>
       );
@@ -169,13 +169,14 @@ export const App = () => {
         enableColumnVisibility={true}
         enableColumnFiltering={true}
         enableGlobalFilter={true}
-        enableColumnPinning={true}
+        enableColumnPinning={false}
+        enableFilterToggle={false}
+        enablePagination={true}
         globalFilterPlaceholder="Search products..."
         searchEndpoint="https://dummyjson.com/products/search"
         debounceMs={500}
-        
         initialColumnVisibility={{
-          id: true,
+          id: false,
           title: true,
           price: true,
           brand: true,
@@ -185,9 +186,9 @@ export const App = () => {
           sku: true,
         }}
         initialColumnPinning={{
-          id: 'right',
-          title: 'right',
-          price: 'right',
+          id: "right",
+          title: "right",
+          price: "right",
         }}
         getRowId={(row) => String(row.id)}
         actions={[
@@ -210,7 +211,7 @@ export const App = () => {
             onClick: (row) => {
               console.log("Delete", row);
             },
-            icon: deleteIcon, 
+            icon: deleteIcon,
           },
         ]}
         /* onSelectSingleRow={(selectedRow) => {
@@ -222,10 +223,9 @@ export const App = () => {
           if (row.stock < 10) return "bg-red-50 hover:bg-red-100";
           if (row.stock < 50) return "bg-yellow-50 hover:bg-yellow-100";
           if (row.price > 1000) return "bg-purple-50 hover:bg-purple-100";
-        
-          return ""; 
+          return "";
         }}
-         onRowSelectionChange={(selectedRowsOnPage) => {
+        onRowSelectionChange={(selectedRowsOnPage) => {
           console.log("Selected rows:", selectedRowsOnPage);
         }}
       />

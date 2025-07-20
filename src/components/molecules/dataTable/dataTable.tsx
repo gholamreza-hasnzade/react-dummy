@@ -72,6 +72,8 @@ export function DataTable<T extends object>({
   enableColumnPinning = false,
   initialColumnPinning = {},
   onColumnPinningChange,
+  enableFilterToggle = true,
+  enablePagination = true,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -86,13 +88,16 @@ export function DataTable<T extends object>({
   const [globalFilter, setGlobalFilter] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
+  const [showFilters, setShowFilters] = useState(enableColumnFiltering);
 
   const isClientData = Array.isArray(dataSource);
   const clientData = isClientData
-    ? (dataSource as T[]).slice(
-        pageIndex * pageSize,
-        (pageIndex + 1) * pageSize
-      )
+    ? enablePagination 
+      ? (dataSource as T[]).slice(
+          pageIndex * pageSize,
+          (pageIndex + 1) * pageSize
+        )
+      : (dataSource as T[])
     : [];
   const clientTotal = isClientData ? (dataSource as T[]).length : 0;
 
@@ -126,8 +131,10 @@ export function DataTable<T extends object>({
           }
         }
 
-        url.searchParams.set("limit", pageSize.toString());
-        url.searchParams.set("skip", (pageIndex * pageSize).toString());
+        if (enablePagination) {
+          url.searchParams.set("limit", pageSize.toString());
+          url.searchParams.set("skip", (pageIndex * pageSize).toString());
+        }
         if (sortBy) url.searchParams.set("sortBy", sortBy);
         if (sortBy) url.searchParams.set("order", order);
 
@@ -250,9 +257,9 @@ export function DataTable<T extends object>({
   const table = useReactTable({
     data,
     columns: columnsWithSelection,
-    pageCount: Math.ceil(total / pageSize),
+    pageCount: enablePagination ? Math.ceil(total / pageSize) : 1,
     state: {
-      pagination: { pageIndex, pageSize },
+      pagination: enablePagination ? { pageIndex, pageSize } : { pageIndex: 0, pageSize: total },
       columnSizing,
       columnVisibility: enableColumnVisibility ? columnVisibility : {},
       columnFilters: enableColumnFiltering ? columnFilters : [],
@@ -261,12 +268,12 @@ export function DataTable<T extends object>({
       rowSelection,
       columnPinning: enableColumnPinning ? columnPinning : {},
     },
-    manualPagination: true,
+    manualPagination: enablePagination,
     manualSorting: true,
     enableRowSelection: onRowSelectionChange ? true : false,
     enableMultiRowSelection: !onSelectSingleRow,
     onRowSelectionChange: onRowSelectionChange ? handleRowSelectionChange : undefined,
-    onPaginationChange: (updater) => {
+    onPaginationChange: enablePagination ? (updater) => {
       if (typeof updater === "function") {
         const next = updater({ pageIndex, pageSize });
         setPageIndex(next.pageIndex);
@@ -275,7 +282,7 @@ export function DataTable<T extends object>({
         setPageIndex(updater.pageIndex);
         setPageSize(updater.pageSize);
       }
-    },
+    } : undefined,
     onSortingChange: setSorting,
     onColumnVisibilityChange: enableColumnVisibility
       ? setColumnVisibility
@@ -320,6 +327,9 @@ export function DataTable<T extends object>({
               enableColumnVisibility={enableColumnVisibility}
               enableColumnFiltering={enableColumnFiltering}
               enableColumnPinning={enableColumnPinning}
+              showFilters={showFilters}
+              onToggleFilters={() => setShowFilters(!showFilters)}
+              enableFilterToggle={enableFilterToggle}
             />
             <tbody className="bg-white divide-y divide-gray-100">
               {loading ? (
@@ -524,18 +534,20 @@ export function DataTable<T extends object>({
           </div>
         </div>
       )}
-      <div className="px-4 sm:px-6 py-4 bg-gray-50 border-t border-gray-200">
-        <DataTablePagination
-          table={table}
-          pageIndex={pageIndex}
-          setPageIndex={setPageIndex}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          pageSizeOptions={pageSizeOptions}
-          loading={loading}
-          computedPageCount={computedPageCount}
-        />
-      </div>
+      {enablePagination && (
+        <div className="px-4 sm:px-6 py-4 bg-gray-50 border-t border-gray-200">
+          <DataTablePagination
+            table={table}
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            pageSizeOptions={pageSizeOptions}
+            loading={loading}
+            computedPageCount={computedPageCount}
+          />
+        </div>
+      )}
     </div>
   );
 }

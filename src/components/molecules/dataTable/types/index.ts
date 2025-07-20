@@ -28,6 +28,8 @@ export interface DataTableProps<T extends object> {
   enableColumnPinning?: boolean;
   initialColumnPinning?: Record<string, 'left' | 'right' | false>;
   onColumnPinningChange?: (pinnedColumns: Record<string, 'left' | 'right' | false>) => void;
+  enableFilterToggle?: boolean;
+  enablePagination?: boolean;
 }
 
 export interface ApiResponse<T> {

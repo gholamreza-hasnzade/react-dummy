@@ -1,6 +1,7 @@
 import type { Table } from "@tanstack/react-table";
 import { ColumnVisibilityToggle } from "./ColumnVisibilityToggle";
 import { ColumnPinningToggle } from "./ColumnPinningToggle";
+import { FilterToggle } from "./FilterToggle";
 import { ColumnFilter } from "./ColumnFilter";
 
 const SortIcon = ({ sorted }: { sorted: false | 'asc' | 'desc' }) => {
@@ -31,12 +32,18 @@ export const DataTableHeader = <T extends object>({
   enableColumnVisibility = true,
   enableColumnFiltering = true,
   enableColumnPinning = false,
+  showFilters = true,
+  onToggleFilters,
+  enableFilterToggle = true,
 }: {
   table: Table<T>;
   actionsHorizontal?: boolean;
   enableColumnVisibility?: boolean;
   enableColumnFiltering?: boolean;
   enableColumnPinning?: boolean;
+  showFilters?: boolean;
+  onToggleFilters?: () => void;
+  enableFilterToggle?: boolean;
 }) => {
   return (
     <thead className="bg-gray-50 sticky top-0 z-30">
@@ -49,6 +56,9 @@ export const DataTableHeader = <T extends object>({
               </div>
               <div className="flex items-center gap-2">
                 {enableColumnPinning && <ColumnPinningToggle<T> table={table} />}
+                {enableColumnFiltering && enableFilterToggle && onToggleFilters && (
+                  <FilterToggle isVisible={showFilters} onToggle={onToggleFilters} />
+                )}
                 <ColumnVisibilityToggle table={table} />
               </div>
             </div>
@@ -132,7 +142,7 @@ export const DataTableHeader = <T extends object>({
         </tr>
       ))}
       
-      {enableColumnFiltering && (
+      {enableColumnFiltering && showFilters && (
         <tr>
           {table.getVisibleLeafColumns().map((column) => (
             <th key={column.id} className="px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
