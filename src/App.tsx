@@ -17,9 +17,10 @@ const columns: ColumnDef<Product, unknown>[] = [
     accessorKey: "id",
     header: "ID",
     size: 80,
-    enableHiding: true,
-    enableColumnFilter: true,
-    enableSorting: true,
+    enableHiding: false,
+    enableColumnFilter: false,
+    enableSorting: false,
+    enablePinning: false,
   },
   {
     size: 300,
@@ -168,6 +169,7 @@ export const App = () => {
         enableColumnVisibility={true}
         enableColumnFiltering={true}
         enableGlobalFilter={true}
+        enableColumnPinning={true}
         globalFilterPlaceholder="Search products..."
         searchEndpoint="https://dummyjson.com/products/search"
         debounceMs={500}
@@ -181,6 +183,11 @@ export const App = () => {
           minimumOrderQuantity: true,
           stock: true,
           sku: true,
+        }}
+        initialColumnPinning={{
+          id: 'right',
+          title: 'right',
+          price: 'right',
         }}
         getRowId={(row) => String(row.id)}
         actions={[
@@ -206,9 +213,9 @@ export const App = () => {
             icon: deleteIcon, 
           },
         ]}
-        onSelectSingleRow={(selectedRow) => {
+        /* onSelectSingleRow={(selectedRow) => {
           console.log("Single row selected:", selectedRow);
-        }}
+        }} */
         getRowClassName={(row) => {
           if (row.id === 5) return "bg-green-100 hover:bg-green-200";
           if (row.id % 2 === 0) return "bg-blue-50 hover:bg-blue-100";
@@ -218,9 +225,9 @@ export const App = () => {
         
           return ""; 
         }}
-        /*  onRowSelectionChange={(selectedRowsOnPage) => {
+         onRowSelectionChange={(selectedRowsOnPage) => {
           console.log("Selected rows:", selectedRowsOnPage);
-        }} */
+        }}
       />
     </div>
   );

@@ -44,6 +44,48 @@ body {
 .table-container::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+/* Sticky column positioning */
+.table-container {
+  position: relative;
+}
+
+.table-container table {
+  position: relative;
+}
+
+.sticky {
+  position: sticky !important;
+}
+
+.sticky.left-0 {
+  left: 0;
+}
+
+.sticky.right-0 {
+  right: 0;
+}
+
+/* Ensure pinned columns stay above other content */
+.z-20 {
+  z-index: 20;
+}
+
+.z-30 {
+  z-index: 30;
+}
+
+.z-100 {
+  z-index: 100;
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: transparent;
+}
 @theme {
   --default-font-family: "YekanBakh";
   --color-primary-100: #e6f3ff;

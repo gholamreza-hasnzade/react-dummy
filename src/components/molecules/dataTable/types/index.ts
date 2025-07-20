@@ -25,6 +25,9 @@ export interface DataTableProps<T extends object> {
   onSelectSingleRow?: (selectedRow: T) => void;
   selectedRowClassName?: string;
   getRowClassName?: (row: T, index: number) => string;
+  enableColumnPinning?: boolean;
+  initialColumnPinning?: Record<string, 'left' | 'right' | false>;
+  onColumnPinningChange?: (pinnedColumns: Record<string, 'left' | 'right' | false>) => void;
 }
 
 export interface ApiResponse<T> {
@@ -66,9 +69,14 @@ export interface ColumnVisibilityToggleProps {
   table: Table<unknown>;
 }
 
+export interface ColumnPinningToggleProps<T> {
+  table: Table<T>;
+}
+
 export interface DataTableHeaderProps {
   table: Table<unknown>;
   actionsHorizontal?: boolean;
   enableColumnVisibility?: boolean;
   enableColumnFiltering?: boolean;
+  enableColumnPinning?: boolean;
 } 

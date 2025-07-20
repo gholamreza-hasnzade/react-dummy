@@ -6,6 +6,7 @@ import type {
   CellContext,
   RowSelectionState,
   Updater,
+  ColumnPinningState,
 } from "@tanstack/react-table";
 import {
   useReactTable,
@@ -68,6 +69,9 @@ export function DataTable<T extends object>({
   onSelectSingleRow,
   selectedRowClassName,
   getRowClassName,
+  enableColumnPinning = false,
+  initialColumnPinning = {},
+  onColumnPinningChange,
 }: DataTableProps<T>) {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(initialPageSize);
@@ -75,6 +79,7 @@ export function DataTable<T extends object>({
   const [columnVisibility, setColumnVisibility] = useState(
     initialColumnVisibility
   );
+  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(initialColumnPinning);
   const [columnFilters, setColumnFilters] = useState<
     Array<{ id: string; value: unknown }>
   >([]);
@@ -254,6 +259,7 @@ export function DataTable<T extends object>({
       globalFilter: enableGlobalFilter ? globalFilter : "",
       sorting,
       rowSelection,
+      columnPinning: enableColumnPinning ? columnPinning : {},
     },
     manualPagination: true,
     manualSorting: true,
@@ -276,6 +282,13 @@ export function DataTable<T extends object>({
       : undefined,
     onColumnFiltersChange: enableColumnFiltering ? setColumnFilters : undefined,
     onGlobalFilterChange: enableGlobalFilter ? setGlobalFilter : undefined,
+    onColumnPinningChange: enableColumnPinning ? (updater) => {
+      const next = typeof updater === "function" ? updater(columnPinning) : updater;
+      setColumnPinning(next);
+      if (onColumnPinningChange) {
+        onColumnPinningChange(next as Record<string, 'left' | 'right' | false>);
+      }
+    } : undefined,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel:
       enableColumnFiltering || enableGlobalFilter
@@ -299,13 +312,14 @@ export function DataTable<T extends object>({
         debounceMs={debounceMs}
       />
       <div className="flex-1 w-full overflow-hidden">
-        <div className="w-full h-full overflow-x-auto table-container">
+        <div className="w-full h-full overflow-x-auto table-container relative">
           <table className="w-full min-w-full divide-y divide-gray-200">
             <DataTableHeader
               table={table}
               actionsHorizontal={actionsHorizontal}
               enableColumnVisibility={enableColumnVisibility}
               enableColumnFiltering={enableColumnFiltering}
+              enableColumnPinning={enableColumnPinning}
             />
             <tbody className="bg-white divide-y divide-gray-100">
               {loading ? (
@@ -375,6 +389,12 @@ export function DataTable<T extends object>({
                             ? "bg-white hover:bg-blue-50" 
                             : "bg-gray-50 hover:bg-blue-50")
                       } ${onSelectSingleRow ? "cursor-pointer" : ""}`}
+                      style={{
+                        ...(isSelected && {
+                          '--tw-bg-opacity': '1',
+                          backgroundColor: 'rgb(219 234 254 / var(--tw-bg-opacity))'
+                        })
+                      }}
                       onClick={onSelectSingleRow ? () => {
                         const newSelection = isSelected ? {} : { [row.id]: true };
                         setRowSelection(newSelection);
@@ -388,10 +408,78 @@ export function DataTable<T extends object>({
                     >
                     {actionsHorizontal ? (
                       <>
-                        {row.getVisibleCells().map((cell) => (
+                        {row.getVisibleCells().map((cell) => {
+                          const isPinned = enableColumnPinning && cell.column.getIsPinned();
+                          const pinnedPosition = isPinned ? cell.column.getPinnedIndex() : null;
+                          
+                          // Get all pinned columns to determine if this is the last one
+                          const pinnedColumns = enableColumnPinning 
+                            ? table.getAllLeafColumns().filter(col => col.getIsPinned() === (isPinned === 'left' ? 'left' : 'right'))
+                            : [];
+                          const isLastPinned = isPinned && pinnedPosition === pinnedColumns.length - 1;
+                          
+                          return (
+                            <td
+                              key={cell.id}
+                              className={`px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm text-gray-900 text-right ${
+                                isPinned ? `sticky ${isPinned === 'left' ? 'left-0' : 'right-0'} ${isLastPinned ? (isPinned === 'left' ? 'border-l border-gray-300' : 'border-r border-gray-300') : ''} z-20` : ''
+                              }`}
+                              style={{
+                                width: cell.column.getSize
+                                  ? cell.column.getSize()
+                                  : cell.column.columnDef.size,
+                                minWidth: cell.column.getSize
+                                  ? cell.column.getSize()
+                                  : cell.column.columnDef.size || 150,
+                                maxWidth: cell.column.getSize
+                                  ? cell.column.getSize()
+                                  : cell.column.columnDef.size,
+                                ...(isPinned && isPinned === 'left' && pinnedPosition !== null
+                                  ? { left: `${pinnedPosition * (cell.column.getSize() || 150)}px` }
+                                  : {}),
+                                ...(isPinned && isPinned === 'right' && pinnedPosition !== null
+                                  ? { right: `${pinnedPosition * (cell.column.getSize() || 150)}px` }
+                                  : {}),
+
+                              }}
+                            >
+                              <span title={String(cell.getValue?.() ?? "")}>
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </span>
+                            </td>
+                          );
+                        })}
+                        <td className="px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right">
+                          <ActionsRow
+                            actions={actions ?? []}
+                            row={row.original}
+                          />
+                        </td>
+                      </>
+                    ) : (
+                      row.getVisibleCells().map((cell) => {
+                        const isPinned = enableColumnPinning && cell.column.getIsPinned();
+                        const pinnedPosition = isPinned ? cell.column.getPinnedIndex() : null;
+                        
+                        // Get all pinned columns to determine if this is the last one
+                        const pinnedColumns = enableColumnPinning 
+                          ? table.getAllLeafColumns().filter(col => col.getIsPinned() === (isPinned === 'left' ? 'left' : 'right'))
+                          : [];
+                        const isLastPinned = isPinned && pinnedPosition === pinnedColumns.length - 1;
+                        
+                        return (
                           <td
                             key={cell.id}
-                            className="px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right"
+                            className={`px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 text-right ${
+                              cell.column.id === "actions"
+                                ? "sticky left-0 z-20 border-l border-gray-300"
+                                : isPinned
+                                ? `sticky ${isPinned === 'left' ? 'left-0' : 'right-0'} ${isLastPinned ? (isPinned === 'left' ? 'border-l border-gray-300' : 'border-r border-gray-300') : ''} z-20`
+                                : ""
+                            }`}
                             style={{
                               width: cell.column.getSize
                                 ? cell.column.getSize()
@@ -402,6 +490,13 @@ export function DataTable<T extends object>({
                               maxWidth: cell.column.getSize
                                 ? cell.column.getSize()
                                 : cell.column.columnDef.size,
+                              ...(isPinned && isPinned === 'left' && pinnedPosition !== null
+                                ? { left: `${pinnedPosition * (cell.column.getSize() || 150)}px` }
+                                : {}),
+                              ...(isPinned && isPinned === 'right' && pinnedPosition !== null
+                                ? { right: `${pinnedPosition * (cell.column.getSize() || 150)}px` }
+                                : {}),
+
                             }}
                           >
                             <span title={String(cell.getValue?.() ?? "")}>
@@ -411,43 +506,8 @@ export function DataTable<T extends object>({
                               )}
                             </span>
                           </td>
-                        ))}
-                        <td className="px-4 sm:px-6 py-4 sm:py-6 whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right">
-                          <ActionsRow
-                            actions={actions ?? []}
-                            row={row.original}
-                          />
-                        </td>
-                      </>
-                    ) : (
-                      row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className={
-                            cell.column.id === "actions"
-                              ? "px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 border-b border-gray-100 text-right"
-                              : "px-4 sm:px-6 py-4 sm:py-6 text-sm text-gray-900 border-b border-gray-100 text-right"
-                          }
-                          style={{
-                            width: cell.column.getSize
-                              ? cell.column.getSize()
-                              : cell.column.columnDef.size,
-                            minWidth: cell.column.getSize
-                              ? cell.column.getSize()
-                              : cell.column.columnDef.size || 150,
-                            maxWidth: cell.column.getSize
-                              ? cell.column.getSize()
-                              : cell.column.columnDef.size,
-                          }}
-                        >
-                          <span title={String(cell.getValue?.() ?? "")}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </span>
-                        </td>
-                      ))
+                        );
+                      })
                     )}
                   </tr>
                 );
