@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import type {
   Row,
   SortingState,
@@ -97,19 +97,25 @@ export function DataTable<T extends object>({
   const [showFilters, setShowFilters] = useState(enableColumnFiltering);
   const [density, setDensity] = useState<Density>(initialDensity);
 
-  const isClientData = Array.isArray(dataSource);
-  const clientData = isClientData
-    ? enablePagination 
+  const isClientData = useMemo(() => Array.isArray(dataSource), [dataSource]);
+  
+  const clientData = useMemo(() => {
+    if (!isClientData) return [];
+    return enablePagination 
       ? (dataSource as T[]).slice(
           pageIndex * pageSize,
           (pageIndex + 1) * pageSize
         )
-      : (dataSource as T[])
-    : [];
-  const clientTotal = isClientData ? (dataSource as T[]).length : 0;
+      : (dataSource as T[]);
+  }, [isClientData, dataSource, enablePagination, pageIndex, pageSize]);
+  
+  const clientTotal = useMemo(() => 
+    isClientData ? (dataSource as T[]).length : 0, 
+    [isClientData, dataSource]
+  );
 
-  const sortBy = sorting[0]?.id;
-  const order = sorting[0]?.desc ? "desc" : "asc";
+  const sortBy = useMemo(() => sorting[0]?.id, [sorting]);
+  const order = useMemo(() => sorting[0]?.desc ? "desc" : "asc", [sorting]);
 
   const {
     data: apiData,
@@ -227,7 +233,7 @@ export function DataTable<T extends object>({
     [selectionColumn, columnsWithActions, onRowSelectionChange]
   );
 
-  function ActionsRow({ actions, row }: { actions: Action<T>[]; row: T }) {
+  const ActionsRow = useCallback(({ actions, row }: { actions: Action<T>[]; row: T }) => {
     return (
       <div className="flex gap-2">
         {actions.map((action, idx) => (
@@ -243,9 +249,9 @@ export function DataTable<T extends object>({
         ))}
       </div>
     );
-  }
+  }, []);
 
-  const handleRowSelectionChange = (updater: Updater<RowSelectionState>) => {
+  const handleRowSelectionChange = useCallback((updater: Updater<RowSelectionState>) => {
     const next = typeof updater === "function" ? updater(rowSelection) : updater;
     setRowSelection(next);
     
@@ -259,14 +265,14 @@ export function DataTable<T extends object>({
       
       onRowSelectionChange(selectedRows);
     }
-  };
+  }, [rowSelection, onRowSelectionChange, data]);
 
-  const handleDensityChange = (newDensity: Density) => {
+  const handleDensityChange = useCallback((newDensity: Density) => {
     setDensity(newDensity);
     if (onDensityChange) {
       onDensityChange(newDensity);
     }
-  };
+  }, [onDensityChange]);
 
   const table = useReactTable({
     data,
@@ -324,6 +330,17 @@ export function DataTable<T extends object>({
 
   const computedPageCount = table.getPageCount();
 
+  const getDensityClasses = useMemo(() => {
+    switch (density) {
+      case 'compact':
+        return 'py-1';
+      case 'comfortable':
+        return 'py-6';
+      default:
+        return 'py-3';
+    }
+  }, [density]);
+
   return (
     <div className="flex flex-col w-full h-full bg-white rounded-lg shadow-sm border border-gray-200">
       <DataTableToolbar
@@ -351,18 +368,9 @@ export function DataTable<T extends object>({
             <tbody className="bg-white divide-y divide-gray-100">
               {loading ? (
                 Array.from({ length: 5 }).map((_, rowIdx) => {
-                  const getDensityClasses = () => {
-                    switch (density) {
-                      case 'compact':
-                        return 'py-2';
-                      case 'comfortable':
-                        return 'py-6';
-                      default:
-                        return 'py-4 sm:py-6';
-                    }
-                  };
+                  const skeletonDensityClasses = density === 'compact' ? 'py-2' : density === 'comfortable' ? 'py-6' : 'py-4 sm:py-6';
                   
-                                    return (
+                  return (
                     <tr key={`skeleton-row-${rowIdx}`}>
                       {Array.from({
                         length: Array.isArray(columnsWithSelection)
@@ -371,7 +379,7 @@ export function DataTable<T extends object>({
                       }).map((_, colIdx) => (
                         <td
                           key={`skeleton-cell-${rowIdx}-${colIdx}`}
-                          className={`px-4 sm:px-6 ${getDensityClasses()} whitespace-nowrap text-sm border-b border-gray-100 text-right`}
+                          className={`px-4 sm:px-6 ${skeletonDensityClasses} whitespace-nowrap text-sm border-b border-gray-100 text-right`}
                         >
                         <div className="h-4 w-full bg-gray-200 rounded animate-pulse" />
                       </td>
@@ -417,16 +425,7 @@ export function DataTable<T extends object>({
                 table.getRowModel().rows.map((row, idx) => {
                   const isSelected = row.getIsSelected();
                   const customRowClass = getRowClassName ? getRowClassName(row.original, idx) : "";
-                  const getDensityClasses = () => {
-                    switch (density) {
-                      case 'compact':
-                        return 'py-1';
-                      case 'comfortable':
-                        return 'py-6';
-                      default:
-                        return 'py-3';
-                    }
-                  };
+
 
                   return (
                     <tr
@@ -469,7 +468,7 @@ export function DataTable<T extends object>({
                           return (
                             <td
                               key={cell.id}
-                              className={`px-4 sm:px-6 ${getDensityClasses()} whitespace-nowrap text-sm text-gray-900 text-right ${
+                              className={`px-4 sm:px-6 ${getDensityClasses} whitespace-nowrap text-sm text-gray-900 text-right ${
                                 isPinned ? `sticky ${isPinned === 'left' ? 'left-0' : 'right-0'} ${isLastPinned ? (isPinned === 'left' ? 'border-l border-gray-300' : 'border-r border-gray-300') : ''} z-20` : ''
                               }`}
                               style={{
@@ -515,7 +514,7 @@ export function DataTable<T extends object>({
                             </td>
                           );
                         })}
-                        <td className={`px-4 sm:px-6 ${getDensityClasses()} whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right`}>
+                        <td className={`px-4 sm:px-6 ${getDensityClasses} whitespace-nowrap text-sm text-gray-900 border-b border-gray-100 text-right`}>
                           <ActionsRow
                             actions={actions ?? []}
                             row={row.original}
@@ -535,7 +534,7 @@ export function DataTable<T extends object>({
                         return (
                           <td
                             key={cell.id}
-                            className={`px-4 sm:px-6 ${getDensityClasses()} text-sm text-gray-900 text-right ${
+                            className={`px-4 sm:px-6 ${getDensityClasses} text-sm text-gray-900 text-right ${
                               cell.column.id === "actions"
                                 ? "sticky left-0 z-20 border-l border-gray-300"
                                 : isPinned

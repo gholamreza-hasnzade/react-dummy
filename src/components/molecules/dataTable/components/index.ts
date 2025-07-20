@@ -7,4 +7,5 @@ export { DataTablePagination } from './DataTablePagination';
 export { DataTableToolbar } from './DataTableToolbar';
 export { GlobalFilter } from './GlobalFilter';
 export { DensityToggle } from './DensityToggle';
-export { EmptyState } from './EmptyState'; 
+export { EmptyState } from './EmptyState';
+export { DataTableRow } from './DataTableRow'; 
