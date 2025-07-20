@@ -169,12 +169,15 @@ export const App = () => {
         enableColumnVisibility={true}
         enableColumnFiltering={true}
         enableGlobalFilter={true}
-        enableColumnPinning={false}
+        enableColumnPinning={true}
         enableFilterToggle={false}
         enablePagination={true}
         globalFilterPlaceholder="Search products..."
         searchEndpoint="https://dummyjson.com/products/search"
         debounceMs={500}
+        onColumnPinningChange={(columnPinning) => {
+          console.log("Column pinning changed:", columnPinning);
+        }}
         initialColumnVisibility={{
           id: false,
           title: true,
