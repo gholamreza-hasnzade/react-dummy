@@ -422,7 +422,6 @@ export function DataTable<T extends object>({
                           const isPinned = enableColumnPinning && cell.column.getIsPinned();
                           const pinnedPosition = isPinned ? cell.column.getPinnedIndex() : null;
                           
-                          // Get all pinned columns to determine if this is the last one
                           const pinnedColumns = enableColumnPinning 
                             ? table.getAllLeafColumns().filter(col => col.getIsPinned() === (isPinned === 'left' ? 'left' : 'right'))
                             : [];
@@ -453,12 +452,27 @@ export function DataTable<T extends object>({
 
                               }}
                             >
-                              <span title={String(cell.getValue?.() ?? "")}>
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </span>
+                              {cell.column.id === "select" || cell.column.id === "actions" ? (
+                                <span>
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                  )}
+                                </span>
+                              ) : (
+                                <div className="group relative">
+                                  <span className="truncate block">
+                                    {flexRender(
+                                      cell.column.columnDef.cell,
+                                      cell.getContext()
+                                    )}
+                                  </span>
+                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                    {String(cell.getValue?.() ?? "")}
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                  </div>
+                                </div>
+                              )}
                             </td>
                           );
                         })}
@@ -474,7 +488,6 @@ export function DataTable<T extends object>({
                         const isPinned = enableColumnPinning && cell.column.getIsPinned();
                         const pinnedPosition = isPinned ? cell.column.getPinnedIndex() : null;
                         
-                        // Get all pinned columns to determine if this is the last one
                         const pinnedColumns = enableColumnPinning 
                           ? table.getAllLeafColumns().filter(col => col.getIsPinned() === (isPinned === 'left' ? 'left' : 'right'))
                           : [];
@@ -509,12 +522,27 @@ export function DataTable<T extends object>({
 
                             }}
                           >
-                            <span title={String(cell.getValue?.() ?? "")}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </span>
+                            {cell.column.id === "select" || cell.column.id === "actions" ? (
+                              <span>
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </span>
+                            ) : (
+                              <div className="group relative">
+                                <span className="truncate block">
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                  )}
+                                </span>
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                  {String(cell.getValue?.() ?? "")}
+                                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                </div>
+                              </div>
+                            )}
                           </td>
                         );
                       })

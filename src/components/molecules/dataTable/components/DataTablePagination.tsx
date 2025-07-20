@@ -52,14 +52,14 @@ export function DataTablePagination<T>({
     <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4 w-full px-4 sm:px-0">
       <div className="flex items-center gap-2">
         <button
-          className="px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+          className="px-3 py-2 cursor-pointer border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => table.setPageIndex(0)}
           disabled={pageIndex === 0 || loading}
         >
           {'<<'}
         </button>
         <button
-          className="px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+          className="px-3 py-2 cursor-pointer border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage() || loading}
         >
@@ -87,7 +87,7 @@ export function DataTablePagination<T>({
             getPageNumbers().map(pageNum => (
               <button
                 key={pageNum}
-                className={`px-3 py-2 border rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 ${
+                className={`px-3 cursor-pointer py-2 border rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 ${
                   pageNum === pageIndex
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
@@ -102,14 +102,14 @@ export function DataTablePagination<T>({
         </div>
         
         <button
-          className="px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+          className="px-3 cursor-pointer py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage() || loading}
         >
           {'>'}
         </button>
         <button
-          className="px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+          className="px-3 cursor-pointer py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
           onClick={() => table.setPageIndex(computedPageCount - 1)}
           disabled={pageIndex >= computedPageCount - 1 || loading}
         >
@@ -138,7 +138,7 @@ export function DataTablePagination<T>({
           />
           <button
             type="submit"
-            className="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1 cursor-pointer bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading || !goToPage}
           >
             Go
